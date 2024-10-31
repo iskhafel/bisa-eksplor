@@ -199,22 +199,21 @@ export default function RegisterPage() {
             </div>
             <div className="flex gap-4">
               <Radio
-                id="userRole"
-                name="role"
+                id="role"
+                name="role1"
                 value="user"
                 checked={formData.role === "user"}
                 onChange={handleChange}
               />
-              <Label htmlFor="userRole">User</Label>
-
+              <Label htmlFor="user">User</Label>
               <Radio
-                id="adminRole"
-                name="role"
+                id="role"
+                name="role2"
                 value="admin"
                 checked={formData.role === "admin"}
                 onChange={handleChange}
               />
-              <Label htmlFor="adminRole">Admin</Label>
+              <Label htmlFor="admin">Admin</Label>
             </div>
           </div>
 
