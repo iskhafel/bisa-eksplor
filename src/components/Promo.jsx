@@ -39,20 +39,28 @@ const Promo = () => {
           promos.map((promo) => (
             <Card
               key={promo.id}
-              imgAlt={promo.title}
-              imgSrc={promo.imageUrl}
-              className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
+              className="bg-white rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105 hover:shadow-2xl"
             >
-              <div className="p-4 text-center">
-                <h3 className="text-xl font-bold text-slate-800 mb-2">
-                  {promo.title}
-                </h3>
-                <p className="text-slate-600">{promo.description}</p>
-                {promo.promo_discount_price && (
-                  <p className="text-lg font-semibold text-blue-600 mt-2">
-                    {promo.promo_discount_price}% Off!
+              {/* Image Section with Cropping */}
+              <img
+                src={promo.imageUrl}
+                alt={promo.title}
+                className="w-full h-40 object-cover rounded-t-lg"
+              />
+              <div className="p-4 text-center h-48 flex flex-col justify-between">
+                <div>
+                  <h3 className="text-xl font-bold text-slate-800 mb-2">
+                    {promo.title}
+                  </h3>
+                  <p className="text-slate-600 line-clamp-3">
+                    {promo.description}
                   </p>
-                )}
+                  {promo.promo_discount_price && (
+                    <p className="text-lg font-semibold text-blue-600 mt-2">
+                      {promo.promo_discount_price}% Off!
+                    </p>
+                  )}
+                </div>
               </div>
             </Card>
           ))

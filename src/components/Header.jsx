@@ -2,6 +2,15 @@
 import { Navbar, Button, Avatar, Dropdown } from "flowbite-react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import {
+  FaHome,
+  FaAtlassian,
+  FaShoppingCart,
+  FaEdit,
+  FaSignOutAlt,
+  FaTicketAlt,
+  FaTachometerAlt,
+} from "react-icons/fa";
 
 export default function Header({ user }) {
   const navigate = useNavigate();
@@ -34,15 +43,39 @@ export default function Header({ user }) {
       </Navbar.Brand>
 
       <Navbar.Collapse>
-        <Link className="text-white hover:text-gray-300 hover:underline" to="/">
+        <Link
+          className="flex gap-2 text-white hover:text-gray-300 hover:underline"
+          to="/"
+        >
+          <FaHome size={20} />
           Home
         </Link>
-        <Link className="text-white hover:text-gray-300 hover:underline" to="/">
-          Activity
+        <Link
+          className="flex gap-2 text-white hover:text-gray-300 hover:underline"
+          to="/"
+        >
+          <FaAtlassian size={20} /> Activity
         </Link>
-        <Link className="text-white hover:text-gray-300 hover:underline" to="/">
-          Card
+        <Link
+          className="flex gap-2 text-white hover:text-gray-300 hover:underline"
+          to="/"
+        >
+          <FaTicketAlt size={20} /> Promo
         </Link>
+        <Link
+          className="flex gap-2 text-white hover:text-gray-300 hover:underline"
+          to="/"
+        >
+          <FaShoppingCart size={20} /> Cart
+        </Link>
+        {user && user.role === "admin" && (
+          <Link
+            className="flex gap-2 text-white hover:text-gray-300 hover:underline"
+            to="/dashboard/user"
+          >
+            <FaTachometerAlt size={20} /> Dashboard
+          </Link>
+        )}
       </Navbar.Collapse>
 
       <div className="flex items-center">
@@ -59,11 +92,17 @@ export default function Header({ user }) {
                   {user.email}
                 </span>
               </Dropdown.Header>
-              <Dropdown.Item onClick={() => navigate("/profile")}>
-                Profile
+              <Dropdown.Item
+                className="flex gap-2"
+                onClick={() => navigate("/profile")}
+              >
+                <FaEdit /> Profile
               </Dropdown.Item>
               <Dropdown.Divider />
-              <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
+              <Dropdown.Item className="flex gap-2" onClick={handleLogout}>
+                <FaSignOutAlt />
+                Logout
+              </Dropdown.Item>
             </Dropdown>
           </div>
         ) : (

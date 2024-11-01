@@ -55,7 +55,7 @@ export default function RegisterPage() {
         .then(() => {
           setShowToast(true); // Show success toast
           setTimeout(() => setShowToast(false), 3000); // Hide toast after 3 seconds
-          setTimeout(() => navigate("/login"), 1000);
+          setTimeout(() => navigate("/login"), 3000);
         })
         .catch((err) => {
           console.error("Registration error:", err);

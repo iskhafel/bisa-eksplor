@@ -37,31 +37,27 @@ const Banner = () => {
     <div className="w-full">
       {/* Banner Carousel */}
       <div className="w-full h-64">
-        {banners.length > 0 ? (
-          <Carousel>
-            {banners.map((banner) => (
-              <div
-                key={banner.id}
-                className="relative flex items-center justify-center h-full bg-cover bg-center"
-                style={{ backgroundImage: `url(${banner.imageUrl})` }}
-              >
-                <div className="justify-center items-center text-center pt-24 absolute inset-0 bg-black opacity-30">
-                  {banner.name}
-                </div>
-                <div className="relative z-10 text-white text-center p-4 max-w-lg mx-auto">
-                  <h2 className="text-2xl font-bold mb-2">{banner.title}</h2>
-                  <p>{banner.description}</p>
-                </div>
+        <Carousel>
+          {banners.map((banner) => (
+            <div
+              key={banner.id}
+              className="relative flex items-center justify-center h-full bg-cover bg-center"
+              style={{ backgroundImage: `url(${banner.imageUrl})` }}
+            >
+              <div className="justify-center items-center text-center pt-24 absolute inset-0 bg-black opacity-30">
+                {banner.name}
               </div>
-            ))}
-          </Carousel>
-        ) : (
-          <p className="text-center text-white">Loading banners...</p>
-        )}
+              <div className="relative z-10 text-white text-center p-4 max-w-lg mx-auto">
+                <h2 className="text-2xl font-bold mb-2">{banner.title}</h2>
+                <p>{banner.description}</p>
+              </div>
+            </div>
+          ))}
+        </Carousel>
       </div>
 
       {/* Main Description Section */}
-      <div className="bg-gray-100  text-center p-6 mt-4">
+      <div className="bg-gray-100  text-center p-6 ">
         <h3 className="text-3xl font-bold mb-2 text-black">
           Why Choose BisaEksplor Travel?
         </h3>
