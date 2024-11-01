@@ -28,7 +28,7 @@ const LoginPage = () => {
 
         setTimeout(() => {
           if (response.data.data.role === "user") navigate("/");
-          else navigate("/admin");
+          else navigate("/dashboard/user");
         }, 3000);
       })
       .catch((error) => {
