@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import {
   Button,
@@ -7,8 +8,8 @@ import {
   TextInput,
   Radio,
   FileInput,
+  Toast,
 } from "flowbite-react";
-import { useNavigate, Link } from "react-router-dom";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -16,12 +17,13 @@ export default function RegisterPage() {
     email: "",
     password: "",
     passwordRepeat: "",
-    role: "user",
+    role: "user", // Default role
     phoneNumber: "",
   });
   const [file, setFile] = useState(null);
-  const [success, setSuccess] = useState(false);
+
   const [error, setError] = useState("");
+  const [showToast, setShowToast] = useState(false); // Controls toast visibility
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -29,9 +31,12 @@ export default function RegisterPage() {
     setFormData((prevData) => ({ ...prevData, [id]: value }));
   };
 
+  const handleRoleChange = (e) =>
+    setFormData({ ...formData, role: e.target.value });
+
   const handleFileChange = (e) => setFile(e.target.files[0]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setError(""); // Clear previous errors
 
@@ -40,71 +45,62 @@ export default function RegisterPage() {
       return;
     }
 
-    try {
-      let profilePictureUrl = "";
-
-      if (file) {
-        profilePictureUrl = await uploadImage(file); // Get the image URL
-      }
-
-      await registerUser(profilePictureUrl);
-    } catch (err) {
-      console.error("Error:", err);
-      setError(err.message || "An error occurred. Please try again.");
+    // Upload image if file is selected, then register user with the profile picture URL
+    if (file) {
+      uploadImage(file)
+        .then((uploadResponse) => {
+          const profilePictureUrl = uploadResponse.data.url;
+          return registerUser(profilePictureUrl);
+        })
+        .then(() => {
+          setShowToast(true); // Show success toast
+          setTimeout(() => setShowToast(false), 3000); // Hide toast after 3 seconds
+          setTimeout(() => navigate("/login"), 1000);
+        })
+        .catch((err) => {
+          console.error("Registration error:", err);
+          setError("An error occurred during registration. Please try again.");
+        });
+    } else {
+      // Register user without profile picture URL
+      registerUser()
+        .then(() => {
+          setShowToast(true); // Show success toast
+          setTimeout(() => setShowToast(false), 3000); // Hide toast after 3 seconds
+          setTimeout(() => navigate("/login"), 1000);
+        })
+        .catch((err) => {
+          console.error("Registration error:", err);
+          setError("An error occurred during registration. Please try again.");
+        });
     }
   };
 
-  const uploadImage = async (file) => {
+  const uploadImage = (file) => {
     const api =
       "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/upload-image";
     const apiKey = "24405e01-fbc1-45a5-9f5a-be13afcd757c";
-    const token =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImdhbnRlbmd0ZXN0dXNlckB5b3BtYWlsLmNvbSIsInVzZXJJZCI6ImMyNDdiMjk2LTUyZTEtNDczMC1iYjdiLTUxOGJiMmUwYjJiOSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzI5OTk5MDU0fQ.cKaLrj5BXkA_7I4HPYt3kZZkk-SrpuynEmBfYUVlJ-U";
-
-    const config = {
-      headers: {
-        apiKey: apiKey,
-        Authorization: `Bearer ${token}`,
-      },
-    };
-
+    const token = localStorage.getItem("JWT_TOKEN");
     const data = new FormData();
     data.append("image", file);
 
-    try {
-      const response = await axios.post(api, data, config);
-      return response.data.url; // Get URL from the upload response
-    } catch (err) {
-      console.error("Error uploading image:", err);
-      throw new Error("Failed to upload profile picture. Please try again.");
-    }
+    return axios.post(api, data, {
+      headers: { apiKey: apiKey, Authorization: `Bearer ${token}` },
+    });
   };
 
-  const registerUser = async (profilePictureUrl = "") => {
-    const apiUrl =
+  const registerUser = (profilePictureUrl = "") => {
+    const api =
       "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/register";
     const apiKey = "24405e01-fbc1-45a5-9f5a-be13afcd757c";
 
-    const data = {
-      ...formData,
-      profilePictureUrl, // Include the image URL in the registration data
-    };
-
-    try {
-      const response = await axios.post(apiUrl, data, {
-        headers: {
-          apiKey: apiKey,
-        },
-      });
-      console.log(response.data); // Log response with user details
-      setSuccess(true);
-      setTimeout(() => navigate("/login"), 1000);
-    } catch (error) {
-      console.error("Error registering user:", error?.response);
-      setError(
-        error?.response?.data?.message || "An error occurred. Please try again."
-      );
-    }
+    return axios.post(
+      api,
+      { ...formData, profilePictureUrl },
+      {
+        headers: { apiKey: apiKey },
+      }
+    );
   };
 
   return (
@@ -112,19 +108,10 @@ export default function RegisterPage() {
       <Card className="max-w-sm w-full mx-auto">
         <h1 className="text-3xl font-bold mx-auto">Register</h1>
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-          <div>
-            {success && (
-              <div className="text-green-500">
-                You have successfully registered.
-              </div>
-            )}
-            {error && <div className="text-red-500">{error}</div>}
-          </div>
+          {error && <div className="text-red-500">{error}</div>}
 
           <div>
-            <div className="mb-2 block">
-              <Label htmlFor="name" value="Name" />
-            </div>
+            <Label htmlFor="name" value="Name" className="mb-2 block" />
             <TextInput
               id="name"
               type="text"
@@ -135,9 +122,7 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <div className="mb-2 block">
-              <Label htmlFor="email" value="Email" />
-            </div>
+            <Label htmlFor="email" value="Email" className="mb-2 block" />
             <TextInput
               id="email"
               type="email"
@@ -148,9 +133,7 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <div className="mb-2 block">
-              <Label htmlFor="password" value="Password" />
-            </div>
+            <Label htmlFor="password" value="Password" className="mb-2 block" />
             <TextInput
               id="password"
               type="password"
@@ -161,9 +144,11 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <div className="mb-2 block">
-              <Label htmlFor="passwordRepeat" value="Repeat Password" />
-            </div>
+            <Label
+              htmlFor="passwordRepeat"
+              value="Repeat Password"
+              className="mb-2 block"
+            />
             <TextInput
               id="passwordRepeat"
               type="password"
@@ -174,16 +159,20 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <div className="mb-2 block">
-              <Label htmlFor="profilePicture" value="Profile Picture" />
-            </div>
+            <Label
+              htmlFor="profilePicture"
+              value="Profile Picture"
+              className="mb-2 block"
+            />
             <FileInput id="profilePicture" onChange={handleFileChange} />
           </div>
 
           <div>
-            <div className="mb-2 block">
-              <Label htmlFor="phoneNumber" value="Phone Number" />
-            </div>
+            <Label
+              htmlFor="phoneNumber"
+              value="Phone Number"
+              className="mb-2 block"
+            />
             <TextInput
               id="phoneNumber"
               type="text"
@@ -194,26 +183,24 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <div className="mb-2 block">
-              <Label value="Role" />
-            </div>
+            <Label value="Role" className="mb-2 block" />
             <div className="flex gap-4">
               <Radio
                 id="role"
                 name="role1"
                 value="user"
                 checked={formData.role === "user"}
-                onChange={handleChange}
+                onChange={handleRoleChange}
               />
-              <Label htmlFor="user">User</Label>
+              <Label htmlFor="userRole">User</Label>
               <Radio
                 id="role"
                 name="role2"
                 value="admin"
                 checked={formData.role === "admin"}
-                onChange={handleChange}
+                onChange={handleRoleChange}
               />
-              <Label htmlFor="admin">Admin</Label>
+              <Label htmlFor="adminRole">Admin</Label>
             </div>
           </div>
 
@@ -223,9 +210,36 @@ export default function RegisterPage() {
               Login
             </Link>
           </Label>
+
           <Button type="submit">Submit</Button>
         </form>
       </Card>
+
+      {/* Success Toast */}
+      {showToast && (
+        <div className="fixed bottom-4 right-4">
+          <Toast>
+            <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-500">
+              <svg
+                className="h-5 w-5"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414L8.414 15l-4.707-4.707a1 1 0 011.414-1.414L8.414 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+            <div className="ml-3 text-sm font-normal">
+              Registration successful!
+            </div>
+            <Toast.Toggle />
+          </Toast>
+        </div>
+      )}
     </div>
   );
 }
