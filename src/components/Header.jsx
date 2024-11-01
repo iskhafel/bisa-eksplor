@@ -35,7 +35,7 @@ export default function Header({ user }) {
   };
 
   return (
-    <Navbar fluid={true} className="bg-slate-700 text-white">
+    <Navbar fluid={true} className="bg-slate-700 text-white ">
       <Navbar.Brand href="/">
         <span className="self-center whitespace-nowrap text-2xl font-bold text-white">
           BisaEksplor
@@ -52,19 +52,19 @@ export default function Header({ user }) {
         </Link>
         <Link
           className="flex gap-2 text-white hover:text-gray-300 hover:underline"
-          to="/"
+          to="/activity"
         >
           <FaAtlassian size={20} /> Activity
         </Link>
         <Link
           className="flex gap-2 text-white hover:text-gray-300 hover:underline"
-          to="/"
+          to="/promo"
         >
           <FaTicketAlt size={20} /> Promo
         </Link>
         <Link
           className="flex gap-2 text-white hover:text-gray-300 hover:underline"
-          to="/"
+          to="/cart"
         >
           <FaShoppingCart size={20} /> Cart
         </Link>
