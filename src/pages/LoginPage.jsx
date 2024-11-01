@@ -26,8 +26,10 @@ const LoginPage = () => {
         setShowToast(true); // Show success toast
         setTimeout(() => setShowToast(false), 3000); // Hide toast after 3 seconds
 
-        // Navigate to home page after 1 second
-        setTimeout(() => navigate("/"), 1000);
+        setTimeout(() => {
+          if (response.data.data.role === "user") navigate("/");
+          else navigate("/dashboard/user");
+        }, 3000);
       })
       .catch((error) => {
         console.error("Login error:", error);
