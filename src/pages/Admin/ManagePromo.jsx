@@ -19,6 +19,7 @@ import {
   HiOutlineClipboardList,
   HiShoppingCart,
 } from "react-icons/hi";
+import { Link } from "react-router-dom";
 
 export default function ManagePromo() {
   const [user, setUser] = useState(null);
@@ -226,26 +227,23 @@ export default function ManagePromo() {
         <Sidebar aria-label="Admin Dashboard Sidebar" className="h-full w-48">
           <Sidebar.Items>
             <Sidebar.ItemGroup>
-              <Sidebar.Item href="/dashboard/user" icon={HiUser}>
-                User
+              <Sidebar.Item icon={HiUser}>
+                <Link to="/dashboard/user">User</Link>
               </Sidebar.Item>
-              <Sidebar.Item href="/dashboard/banner" icon={HiPhotograph}>
-                Banner
+              <Sidebar.Item icon={HiPhotograph}>
+                <Link to="/dashboard/banner">Banner</Link>
               </Sidebar.Item>
-              <Sidebar.Item href="/dashboard/promo" icon={HiTag}>
-                Promo
+              <Sidebar.Item icon={HiTag}>
+                <Link to="/dashboard/promo">Promo</Link>
               </Sidebar.Item>
-              <Sidebar.Item href="/dashboard/category" icon={HiViewGrid}>
-                Category
+              <Sidebar.Item icon={HiViewGrid}>
+                <Link to="/dashboard/category">Category</Link>
               </Sidebar.Item>
-              <Sidebar.Item
-                href="/dashboard/activity"
-                icon={HiOutlineClipboardList}
-              >
-                Activity
+              <Sidebar.Item icon={HiOutlineClipboardList}>
+                <Link to="/dashboard/activity">Activity</Link>
               </Sidebar.Item>
-              <Sidebar.Item href="/dashboard/transaction" icon={HiShoppingCart}>
-                Transaction
+              <Sidebar.Item icon={HiShoppingCart}>
+                <Link to="/dashboard/transaction">Transaction</Link>
               </Sidebar.Item>
             </Sidebar.ItemGroup>
           </Sidebar.Items>
