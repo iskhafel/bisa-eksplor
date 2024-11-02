@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 export default function ProtectedRoute() {
   const [isAdmin, setIsAdmin] = useState(null);
+  const [isLogin, setIsLogin] = useState(false);
   const token = localStorage.getItem("JWT_TOKEN");
 
   useEffect(() => {
@@ -20,20 +21,28 @@ export default function ProtectedRoute() {
         )
         .then((response) => {
           setIsAdmin(response.data.data.role === "admin");
+          setIsLogin(true);
         })
         .catch(() => {
           setIsAdmin(false);
         });
     } else {
       setIsAdmin(false);
+      setIsLogin(false);
     }
   }, [token]);
 
-  // Show a loading message while waiting for the role check
   if (isAdmin === null) {
     return <div>Loading...</div>;
   }
 
-  // Redirect to login if the user is not authenticated or not an admin
+  if (isLogin === true) {
+    return <Outlet />;
+  }
+
+  if (!isLogin) {
+    return <Navigate to="/" />;
+  }
+
   return isAdmin ? <Outlet /> : <Navigate to="/" />;
 }

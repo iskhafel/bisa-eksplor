@@ -1,7 +1,15 @@
 import Header from "../../components/Header";
 import axios from "axios";
 import { useState, useEffect } from "react";
-import { Sidebar, Card, Button, Modal, Label, Select } from "flowbite-react";
+import {
+  Sidebar,
+  Card,
+  Button,
+  Modal,
+  Label,
+  Select,
+  Pagination,
+} from "flowbite-react";
 import {
   HiUser,
   HiPhotograph,
@@ -14,12 +22,15 @@ import { Link } from "react-router-dom";
 
 export default function ManageUser() {
   const [user, setUser] = useState(null);
-  const [users, setUsers] = useState([]); // State to store the list of all users
-  const [isModalOpen, setIsModalOpen] = useState(false); // Controls modal visibility
-  const [selectedUser, setSelectedUser] = useState(null); // Stores user being edited
-  const [newRole, setNewRole] = useState(""); // Stores the new role for the user
+  const [users, setUsers] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [newRole, setNewRole] = useState("");
 
-  // Fetch the logged-in user profile
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
+  const fallbackImage = "https://via.placeholder.com/150";
+
   const getUserProfile = () => {
     const token = localStorage.getItem("JWT_TOKEN");
     axios
@@ -29,15 +40,10 @@ export default function ManageUser() {
           apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
         },
       })
-      .then((response) => {
-        setUser(response.data.data); // Set user data, including role
-      })
-      .catch((error) => {
-        console.error("Failed to fetch user profile:", error);
-      });
+      .then((response) => setUser(response.data.data))
+      .catch((error) => console.error("Failed to fetch user profile:", error));
   };
 
-  // Fetch all users
   const fetchAllUsers = () => {
     const token = localStorage.getItem("JWT_TOKEN");
     axios
@@ -50,34 +56,27 @@ export default function ManageUser() {
           },
         }
       )
-      .then((response) => {
-        setUsers(response.data.data); // Assuming users are in response.data.data
-      })
-      .catch((error) => {
-        console.error("Failed to fetch users:", error);
-      });
+      .then((response) => setUsers(response.data.data))
+      .catch((error) => console.error("Failed to fetch users:", error));
   };
 
   useEffect(() => {
     getUserProfile();
-    fetchAllUsers(); // Fetch all users when component mounts
+    fetchAllUsers();
   }, []);
 
-  // Open the modal and set selected user
   const handleEditUser = (user) => {
     setSelectedUser(user);
-    setNewRole(user.role); // Set the initial value of newRole
-    setIsModalOpen(true); // Open modal
+    setNewRole(user.role);
+    setIsModalOpen(true);
   };
 
-  // Close the modal
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedUser(null);
-    setNewRole(""); // Reset role
+    setNewRole("");
   };
 
-  // Update the user's role
   const updateUserRole = () => {
     const token = localStorage.getItem("JWT_TOKEN");
     axios
@@ -91,69 +90,87 @@ export default function ManageUser() {
           },
         }
       )
-      .then((response) => {
-        // Update users state with the new role
-        console.log("User role updated:", response.data.data);
+      .then(() => {
         setUsers((prevUsers) =>
           prevUsers.map((u) =>
             u.id === selectedUser.id ? { ...u, role: newRole } : u
           )
         );
-        closeModal(); // Close modal after update
+        closeModal();
       })
-      .catch((error) => {
-        console.error("Failed to update user role:", error);
-      });
+      .catch((error) => console.error("Failed to update user role:", error));
   };
+
+  // Pagination Logic
+  const totalPages = Math.ceil(users.length / itemsPerPage);
+  const paginatedUsers = users.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <>
       <Header user={user} />
 
       <div className="flex">
-        {/* Sidebar */}
         <Sidebar aria-label="Admin Dashboard Sidebar" className="h-full w-48">
           <Sidebar.Items>
             <Sidebar.ItemGroup>
-              <Sidebar.Item icon={HiUser}>
-                <Link to="/dashboard/user">User</Link>
+              <Sidebar.Item icon={HiUser} to="/dashboard/user" as={Link}>
+                User
               </Sidebar.Item>
-              <Sidebar.Item icon={HiPhotograph}>
-                <Link to="/dashboard/banner">Banner</Link>
+              <Sidebar.Item
+                icon={HiPhotograph}
+                to="/dashboard/banner"
+                as={Link}
+              >
+                Banner
               </Sidebar.Item>
-              <Sidebar.Item icon={HiTag}>
-                <Link to="/dashboard/promo">Promo</Link>
+              <Sidebar.Item icon={HiTag} to="/dashboard/promo" as={Link}>
+                Promo
               </Sidebar.Item>
-              <Sidebar.Item icon={HiViewGrid}>
-                <Link to="/dashboard/category">Category</Link>
+              <Sidebar.Item
+                icon={HiViewGrid}
+                to="/dashboard/category"
+                as={Link}
+              >
+                Category
               </Sidebar.Item>
-              <Sidebar.Item icon={HiOutlineClipboardList}>
-                <Link to="/dashboard/activity">Activity</Link>
+              <Sidebar.Item
+                icon={HiOutlineClipboardList}
+                to="/dashboard/activity"
+                as={Link}
+              >
+                Activity
               </Sidebar.Item>
-              <Sidebar.Item icon={HiShoppingCart}>
-                <Link to="/dashboard/transaction">Transaction</Link>
+              <Sidebar.Item
+                icon={HiShoppingCart}
+                to="/dashboard/transaction"
+                as={Link}
+              >
+                Transaction
               </Sidebar.Item>
             </Sidebar.ItemGroup>
           </Sidebar.Items>
         </Sidebar>
 
-        {/* User Cards Section */}
         <div className="flex-1 p-6 bg-gray-100">
           <h2 className="text-2xl font-bold mb-6">Manage Users</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {users.map((user) => (
+            {paginatedUsers.map((user) => (
               <Card key={user.id} className="bg-white shadow-lg">
                 <img
-                  src={user.profilePictureUrl}
+                  src={user.profilePictureUrl || fallbackImage}
                   alt={user.name}
                   className="w-full h-32 object-cover rounded-t-lg"
+                  onError={(e) => (e.currentTarget.src = fallbackImage)}
                 />
                 <div className="p-4 text-center">
-                  <h3 className=" text-xl font-bold text-slate-800 mb-2">
+                  <h3 className="text-xl font-bold text-slate-800 mb-2">
                     {user.name}
                   </h3>
-                  <p className=" text-slate-600">{user.email}</p>
-                  <p className=" text-slate-600">{user.phoneNumber}</p>
+                  <p className="text-slate-600">{user.email}</p>
+                  <p className="text-slate-600">{user.phoneNumber}</p>
                   <p
                     className={`mt-2 px-4 py-1 rounded-full text-sm ${
                       user.role === "admin"
@@ -173,10 +190,18 @@ export default function ManageUser() {
               </Card>
             ))}
           </div>
+
+          {/* Pagination Component */}
+          <div className="flex justify-center mt-6">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={(page) => setCurrentPage(page)}
+            />
+          </div>
         </div>
       </div>
 
-      {/* Edit User Role Modal */}
       {selectedUser && (
         <Modal show={isModalOpen} onClose={closeModal}>
           <Modal.Header>Edit User Role</Modal.Header>

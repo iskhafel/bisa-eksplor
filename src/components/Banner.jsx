@@ -24,8 +24,7 @@ const Banner = () => {
           }
         )
         .then((response) => {
-          console.log("Banners response:", response.data.data);
-          setBanners(response.data.data); // Assuming the data is in response.data.data
+          setBanners(response.data.data);
         })
         .catch((error) => console.error("Failed to fetch banners:", error));
     };
@@ -36,20 +35,22 @@ const Banner = () => {
   return (
     <div className="w-full">
       {/* Banner Carousel */}
-      <div className="w-full h-64">
-        <Carousel>
+      <div className="w-full h-80 md:h-96">
+        <Carousel indicators>
           {banners.map((banner) => (
             <div
               key={banner.id}
-              className="relative flex items-center justify-center h-full bg-cover bg-center"
-              style={{ backgroundImage: `url(${banner.imageUrl})` }}
+              className="relative flex items-center justify-center h-full bg-center bg-cover"
+              style={{
+                backgroundImage: `url(${banner.imageUrl})`,
+                backgroundPosition: "center",
+                backgroundSize: "cover",
+              }}
             >
-              <div className="justify-center items-center text-center pt-24 absolute inset-0 bg-black opacity-30">
-                {banner.name}
-              </div>
+              <div className="absolute inset-0 bg-black opacity-30"></div>
               <div className="relative z-10 text-white text-center p-4 max-w-lg mx-auto">
-                <h2 className="text-2xl font-bold mb-2">{banner.title}</h2>
-                <p>{banner.description}</p>
+                <h2 className="text-3xl font-bold mb-2">{banner.title}</h2>
+                <p className="text-lg">{banner.description}</p>
               </div>
             </div>
           ))}
@@ -57,7 +58,7 @@ const Banner = () => {
       </div>
 
       {/* Main Description Section */}
-      <div className="bg-gray-100  text-center p-6 ">
+      <div className="bg-gray-100 text-center p-6">
         <h3 className="text-3xl font-bold mb-2 text-black">
           Why Choose BisaEksplor Travel?
         </h3>
