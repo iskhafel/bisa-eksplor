@@ -292,7 +292,7 @@ export default function ManagePromo() {
       <Modal show={isCreateModalOpen} onClose={closeModal}>
         <Modal.Header>Create New Promo</Modal.Header>
         <Modal.Body>
-          <div className="space-y-6">
+          <div className="">
             <Label htmlFor="newTitle" value="Title" />
             <TextInput
               id="title"
@@ -359,7 +359,7 @@ export default function ManagePromo() {
       <Modal show={isEditModalOpen} onClose={closeModal}>
         <Modal.Header>Edit Promo</Modal.Header>
         <Modal.Body>
-          <div className="space-y-6">
+          <div>
             <Label htmlFor="newTitle" value="Title" />
             <TextInput
               id="title"
