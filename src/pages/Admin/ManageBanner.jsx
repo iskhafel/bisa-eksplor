@@ -207,23 +207,39 @@ export default function ManageBanner() {
         <Sidebar aria-label="Admin Dashboard Sidebar" className="h-full w-48">
           <Sidebar.Items>
             <Sidebar.ItemGroup>
-              <Sidebar.Item icon={HiUser}>
-                <Link to="/dashboard/user">User</Link>
+              <Sidebar.Item icon={HiUser} to="/dashboard/user" as={Link}>
+                User
               </Sidebar.Item>
-              <Sidebar.Item icon={HiPhotograph}>
-                <Link to="/dashboard/banner">Banner</Link>
+              <Sidebar.Item
+                icon={HiPhotograph}
+                to="/dashboard/banner"
+                as={Link}
+              >
+                Banner
               </Sidebar.Item>
-              <Sidebar.Item icon={HiTag}>
-                <Link to="/dashboard/promo">Promo</Link>
+              <Sidebar.Item icon={HiTag} to="/dashboard/promo" as={Link}>
+                Promo
               </Sidebar.Item>
-              <Sidebar.Item icon={HiViewGrid}>
-                <Link to="/dashboard/category">Category</Link>
+              <Sidebar.Item
+                icon={HiViewGrid}
+                to="/dashboard/category"
+                as={Link}
+              >
+                Category
               </Sidebar.Item>
-              <Sidebar.Item icon={HiOutlineClipboardList}>
-                <Link to="/dashboard/activity">Activity</Link>
+              <Sidebar.Item
+                icon={HiOutlineClipboardList}
+                to="/dashboard/activity"
+                as={Link}
+              >
+                Activity
               </Sidebar.Item>
-              <Sidebar.Item icon={HiShoppingCart}>
-                <Link to="/dashboard/transaction">Transaction</Link>
+              <Sidebar.Item
+                icon={HiShoppingCart}
+                to="/dashboard/transaction"
+                as={Link}
+              >
+                Transaction
               </Sidebar.Item>
             </Sidebar.ItemGroup>
           </Sidebar.Items>

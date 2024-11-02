@@ -1,8 +1,8 @@
-import Header from "../components/Header";
+import Header from "../../../components/Header";
 import axios from "axios";
 import { useState, useEffect } from "react";
 
-export default function CartPage() {
+export default function PromoPage() {
   const [user, setUser] = useState(null);
 
   const getUserProfile = () => {
