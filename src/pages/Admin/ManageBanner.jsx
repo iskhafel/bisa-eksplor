@@ -273,7 +273,7 @@ export default function ManageBanner() {
       <Modal show={isCreateModalOpen} onClose={closeModal}>
         <Modal.Header>Create New Banner</Modal.Header>
         <Modal.Body>
-          <div className="space-y-6">
+          <div>
             <Label htmlFor="newTitle" value="Title" />
             <TextInput
               id="newTitle"
@@ -303,7 +303,7 @@ export default function ManageBanner() {
         <Modal show={isEditModalOpen} onClose={closeModal}>
           <Modal.Header>Edit Banner</Modal.Header>
           <Modal.Body>
-            <div className="space-y-6">
+            <div>
               <Label htmlFor="editTitle" value="Title" />
               <TextInput
                 id="editTitle"
