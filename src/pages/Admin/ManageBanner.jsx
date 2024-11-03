@@ -59,7 +59,8 @@ export default function ManageBanner() {
   // Open edit modal and set selected banner
   const handleEditBanner = (banner) => {
     setSelectedBanner(banner);
-    setNewTitle(banner.title);
+    setNewTitle(banner.name);
+    setNewImage(null);
     setIsEditModalOpen(true);
   };
 

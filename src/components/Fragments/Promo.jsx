@@ -1,29 +1,31 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Card } from "flowbite-react";
+import { useNavigate } from "react-router-dom";
 
 const Promo = () => {
   const [promos, setPromos] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch promos from API
-    const fetchPromos = () => {
-      axios
-        .get(
-          "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/promos",
-          {
-            headers: { apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c" },
-          }
-        )
-        .then((response) => {
-          console.log("Promos response:", response.data.data);
-          setPromos(response.data.data); // Assuming promos are in response.data.data
-        })
-        .catch((error) => console.error("Failed to fetch promos:", error));
-    };
-
-    fetchPromos();
+    axios
+      .get(
+        "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/promos",
+        {
+          headers: { apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c" },
+        }
+      )
+      .then((response) => {
+        console.log("Promos response:", response.data.data);
+        setPromos(response.data.data);
+      })
+      .catch((error) => console.error("Failed to fetch promos:", error));
   }, []);
+
+  const DetailPromo = (id) => {
+    navigate(`/promo/${id}`);
+  };
 
   return (
     <div className="w-full py-8 bg-slate-800 text-white">
@@ -39,7 +41,8 @@ const Promo = () => {
           promos.map((promo) => (
             <Card
               key={promo.id}
-              className="bg-white rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105 hover:shadow-2xl"
+              className="bg-white rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105 hover:shadow-2xl cursor-pointer" // Add cursor-pointer here
+              onClick={() => DetailPromo(promo.id)}
             >
               {/* Image Section with Cropping */}
               <img
