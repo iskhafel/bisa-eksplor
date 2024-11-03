@@ -1,6 +1,6 @@
 import Header from "../../components/Header";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import {
   Sidebar,
   Card,
@@ -19,33 +19,17 @@ import {
   HiShoppingCart,
 } from "react-icons/hi";
 import { Link } from "react-router-dom";
+import { UserContext } from "../../context/UserContextProvider";
 
 export default function ManageBanner() {
-  const [user, setUser] = useState(null);
+  const { user } = useContext(UserContext);
+
   const [banners, setBanners] = useState([]); // Stores fetched banners
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false); // Controls create modal visibility
   const [isEditModalOpen, setIsEditModalOpen] = useState(false); // Controls edit modal visibility
   const [selectedBanner, setSelectedBanner] = useState(null); // Stores banner being edited
   const [newTitle, setNewTitle] = useState(""); // Stores new banner title
   const [newImage, setNewImage] = useState(null); // Stores new banner image file
-
-  // Fetch the logged-in user profile
-  const getUserProfile = () => {
-    const token = localStorage.getItem("JWT_TOKEN");
-    axios
-      .get("https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/user", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
-        },
-      })
-      .then((response) => {
-        setUser(response.data.data); // Set user data, including role
-      })
-      .catch((error) => {
-        console.error("Failed to fetch user profile:", error);
-      });
-  };
 
   // Fetch all banners
   const fetchBanners = () => {
@@ -69,7 +53,6 @@ export default function ManageBanner() {
   };
 
   useEffect(() => {
-    getUserProfile();
     fetchBanners(); // Fetch banners on component mount
   }, []);
 

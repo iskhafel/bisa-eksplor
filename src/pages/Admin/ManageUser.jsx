@@ -1,6 +1,7 @@
 import Header from "../../components/Header";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { UserContext } from "../../context/UserContextProvider";
 import {
   Sidebar,
   Card,
@@ -21,28 +22,15 @@ import {
 import { Link } from "react-router-dom";
 
 export default function ManageUser() {
-  const [user, setUser] = useState(null);
+  const { user } = useContext(UserContext);
   const [users, setUsers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [newRole, setNewRole] = useState("");
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
+  const itemsPerPage = 4;
   const fallbackImage = "https://via.placeholder.com/150";
-
-  const getUserProfile = () => {
-    const token = localStorage.getItem("JWT_TOKEN");
-    axios
-      .get("https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/user", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
-        },
-      })
-      .then((response) => setUser(response.data.data))
-      .catch((error) => console.error("Failed to fetch user profile:", error));
-  };
 
   const fetchAllUsers = () => {
     const token = localStorage.getItem("JWT_TOKEN");
@@ -61,7 +49,6 @@ export default function ManageUser() {
   };
 
   useEffect(() => {
-    getUserProfile();
     fetchAllUsers();
   }, []);
 

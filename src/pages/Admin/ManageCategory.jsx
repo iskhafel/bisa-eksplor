@@ -1,6 +1,6 @@
 import Header from "../../components/Header";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import {
   Sidebar,
   Card,
@@ -19,9 +19,11 @@ import {
   HiOutlineClipboardList,
   HiShoppingCart,
 } from "react-icons/hi";
+import { UserContext } from "../../context/UserContextProvider";
 
 export default function ManageCategory() {
-  const [user, setUser] = useState(null);
+  const { user } = useContext(UserContext);
+
   const [categories, setCategories] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -34,24 +36,8 @@ export default function ManageCategory() {
   const [newTitle, setNewTitle] = useState("");
 
   useEffect(() => {
-    getUserProfile();
     fetchCategories();
   }, []);
-
-  const getUserProfile = () => {
-    const token = localStorage.getItem("JWT_TOKEN");
-    axios
-      .get("https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/user", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
-        },
-      })
-      .then((response) => {
-        setUser(response.data.data);
-      })
-      .catch((error) => console.error("Failed to fetch user profile:", error));
-  };
 
   const fetchCategories = () => {
     const token = localStorage.getItem("JWT_TOKEN");
