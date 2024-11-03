@@ -24,6 +24,7 @@ import { Link } from "react-router-dom";
 
 export default function ManagePromo() {
   const { user } = useContext(UserContext);
+
   const [promos, setPromos] = useState([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);

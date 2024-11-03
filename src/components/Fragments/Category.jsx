@@ -62,7 +62,7 @@ const Category = () => {
           categories.map((category) => (
             <div
               key={category.id}
-              className="relative flex flex-col items-center justify-center p-6 bg-cover bg-center rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 text-white"
+              className="cursor-pointer relative flex flex-col items-center justify-center p-6 bg-cover bg-center rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 text-white"
               style={{
                 backgroundImage: `url(${category.imageUrl})`,
               }}

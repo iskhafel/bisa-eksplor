@@ -9,28 +9,32 @@ import {
   FaShieldAlt,
   FaLeaf,
 } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const Banner = () => {
   const [banners, setBanners] = useState([]);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     // Fetch banners from API
-    const fetchBanners = () => {
-      axios
-        .get(
-          "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/banners",
-          {
-            headers: { apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c" },
-          }
-        )
-        .then((response) => {
-          setBanners(response.data.data);
-        })
-        .catch((error) => console.error("Failed to fetch banners:", error));
-    };
 
-    fetchBanners();
+    axios
+      .get(
+        "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/banners",
+        {
+          headers: { apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c" },
+        }
+      )
+      .then((response) => {
+        setBanners(response.data.data);
+      })
+      .catch((error) => console.error("Failed to fetch banners:", error));
   }, []);
+
+  const DetailBanner = (id) => {
+    navigate(`/banner/${id}`);
+  };
 
   return (
     <div className="w-full">
@@ -40,12 +44,13 @@ const Banner = () => {
           {banners.map((banner) => (
             <div
               key={banner.id}
-              className="relative flex items-center justify-center h-full bg-center bg-cover"
+              className="cursor-pointer relative flex items-center justify-center h-full bg-center bg-cover"
               style={{
                 backgroundImage: `url(${banner.imageUrl})`,
                 backgroundPosition: "center",
                 backgroundSize: "cover",
               }}
+              onClick={() => DetailBanner(banner.id)}
             >
               <div className="absolute inset-0 bg-black opacity-30"></div>
               <div className="relative z-10 text-white text-center p-4 max-w-lg mx-auto">
