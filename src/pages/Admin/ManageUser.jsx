@@ -156,8 +156,8 @@ export default function ManageUser() {
                   <h3 className="text-xl font-bold text-slate-800 mb-2">
                     {user.name}
                   </h3>
-                  <p className="text-slate-600">{user.email}</p>
-                  <p className="text-slate-600">{user.phoneNumber}</p>
+                  <p className="text-slate-600 mt-4">{user.email}</p>
+                  <p className="text-slate-600 mb-4">{user.phoneNumber}</p>
                   <p
                     className={`mt-2 px-4 py-1 rounded-full text-sm ${
                       user.role === "admin"

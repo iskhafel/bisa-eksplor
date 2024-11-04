@@ -234,11 +234,7 @@ export default function ManageBanner() {
           <h2 className="text-2xl font-bold mb-6">Manage Banners</h2>
 
           {/* Create Banner Button */}
-          <Button
-            color="green"
-            onClick={() => setIsCreateModalOpen(true)}
-            className="mb-6"
-          >
+          <Button onClick={() => setIsCreateModalOpen(true)} className="mb-6">
             Create New Banner
           </Button>
 

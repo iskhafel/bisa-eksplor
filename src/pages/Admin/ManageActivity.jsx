@@ -98,44 +98,54 @@ export default function ManageActivity() {
     setNewImages([]);
   };
 
-  const uploadImage = async (imageFile) => {
+  const uploadImages = async () => {
     const token = localStorage.getItem("JWT_TOKEN");
-    const formData = new FormData();
-    formData.append("image", imageFile);
-    const response = await axios.post(
-      "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/upload-image",
-      formData,
-      {
+    const uploadedUrls = [];
+    for (const image of newImages) {
+      const formData = new FormData();
+      formData.append("image", image);
+
+      try {
+        const response = await axios.post(
+          "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/upload-image",
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        uploadedUrls.push(response.data.url);
+      } catch (error) {
+        console.error("Failed to upload image:", error);
+      }
+    }
+    return uploadedUrls;
+  };
+
+  const handleSubmit = async () => {
+    const token = localStorage.getItem("JWT_TOKEN");
+    try {
+      const imageUrls = await uploadImages();
+      const activityData = { ...formData, imageUrls };
+
+      const url = isEditModalOpen
+        ? `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/update-activity/${selectedActivity.id}`
+        : "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/create-activity";
+
+      await axios.post(url, activityData, {
         headers: {
           Authorization: `Bearer ${token}`,
           apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
-          "Content-Type": "multipart/form-data",
         },
-      }
-    );
-    return response.data.url;
-  };
+      });
 
-  const createActivity = async () => {
-    const token = localStorage.getItem("JWT_TOKEN");
-    try {
-      const imageUrls = await Promise.all(
-        newImages.map((file) => uploadImage(file))
-      );
-      await axios.post(
-        "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/create-activity",
-        { ...formData, imageUrls },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
-          },
-        }
-      );
       fetchCategoriesAndActivities();
       closeModal();
     } catch (error) {
-      console.error("Failed to create activity:", error);
+      console.error("Failed to submit form:", error);
     }
   };
 
@@ -143,32 +153,6 @@ export default function ManageActivity() {
     setSelectedActivity(activity);
     setFormData({ ...activity });
     setIsEditModalOpen(true);
-  };
-
-  const updateActivity = async () => {
-    const token = localStorage.getItem("JWT_TOKEN");
-    try {
-      let imageUrls = selectedActivity.imageUrls;
-      if (newImages.length) {
-        imageUrls = await Promise.all(
-          newImages.map((file) => uploadImage(file))
-        );
-      }
-      await axios.post(
-        `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/update-activity/${selectedActivity.id}`,
-        { ...formData, imageUrls },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
-          },
-        }
-      );
-      fetchCategoriesAndActivities();
-      closeModal();
-    } catch (error) {
-      console.error("Failed to update activity:", error);
-    }
   };
 
   const deleteActivity = (id) => {
@@ -239,11 +223,7 @@ export default function ManageActivity() {
 
         <div className="flex-1 p-6 bg-gray-100">
           <h2 className="text-2xl font-bold mb-6">Manage Activities</h2>
-          <Button
-            color="green"
-            onClick={() => setIsCreateModalOpen(true)}
-            className="mb-6"
-          >
+          <Button onClick={() => setIsCreateModalOpen(true)} className="mb-6">
             Create New Activity
           </Button>
 
@@ -256,24 +236,29 @@ export default function ManageActivity() {
                   }
                   alt={activity.title}
                   className="w-full h-32 object-cover rounded-t-lg"
+                  onError={(e) =>
+                    (e.currentTarget.src = "https://via.placeholder.com/150")
+                  }
                 />
-                <div className="p-4 text-center">
-                  <h3 className="text-xl font-bold text-slate-800 mb-2">
+                <div className="p-4 text-center h-32 flex flex-col justify-between">
+                  <h3 className="text-md font-bold text-slate-800">
                     {activity.title}
                   </h3>
-                  <Button
-                    className="mt-4 w-full"
-                    onClick={() => handleEditActivity(activity)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    color="red"
-                    className="mt-2 w-full"
-                    onClick={() => deleteActivity(activity.id)}
-                  >
-                    Delete
-                  </Button>
+                  <div className="flex justify-center gap-2">
+                    <Button
+                      className="w-full"
+                      onClick={() => handleEditActivity(activity)}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      color="red"
+                      className="w-full"
+                      onClick={() => deleteActivity(activity.id)}
+                    >
+                      Delete
+                    </Button>
+                  </div>
                 </div>
               </Card>
             ))}
@@ -286,7 +271,7 @@ export default function ManageActivity() {
           {isEditModalOpen ? "Edit Activity" : "Create Activity"}
         </Modal.Header>
         <Modal.Body>
-          <div>
+          <div className="">
             <Label htmlFor="title" value="Title" />
             <TextInput
               id="title"
@@ -313,13 +298,131 @@ export default function ManageActivity() {
                 </option>
               ))}
             </Select>
-            {/* Additional fields for description, address, price, etc. */}
+            <Label htmlFor="description" value="Description" />
+            <TextInput
+              id="description"
+              type="text"
+              value={formData.description}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
+            />
+            <Label htmlFor="imageUrls" value="Upload Images" />
+            <input
+              id="imageUrls"
+              type="file"
+              multiple
+              onChange={(e) => setNewImages([...e.target.files])}
+              className="block w-full text-sm text-gray-500 border border-gray-300 rounded-lg cursor-pointer focus:outline-none"
+            />
+            {/* Price */}
+            <Label htmlFor="price" value="Price" />
+            <TextInput
+              id="price"
+              type="number"
+              value={formData.price}
+              onChange={(e) =>
+                setFormData({ ...formData, price: parseInt(e.target.value) })
+              }
+            />
+
+            {/* Price Discount */}
+            <Label htmlFor="price_discount" value="Discounted Price" />
+            <TextInput
+              id="price_discount"
+              type="number"
+              value={formData.price_discount}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  price_discount: parseInt(e.target.value),
+                })
+              }
+            />
+
+            {/* Rating */}
+            <Label htmlFor="rating" value="Rating" />
+            <TextInput
+              id="rating"
+              type="number"
+              value={formData.rating}
+              onChange={(e) =>
+                setFormData({ ...formData, rating: parseInt(e.target.value) })
+              }
+            />
+
+            {/* Total Reviews */}
+            <Label htmlFor="total_reviews" value="Total Reviews" />
+            <TextInput
+              id="total_reviews"
+              type="number"
+              value={formData.total_reviews}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  total_reviews: parseInt(e.target.value),
+                })
+              }
+            />
+
+            {/* Facilities */}
+            <Label htmlFor="facilities" value="Facilities" />
+            <TextInput
+              id="facilities"
+              type="text"
+              value={formData.facilities}
+              onChange={(e) =>
+                setFormData({ ...formData, facilities: e.target.value })
+              }
+            />
+
+            {/* Address */}
+            <Label htmlFor="address" value="Address" />
+            <TextInput
+              id="address"
+              type="text"
+              value={formData.address}
+              onChange={(e) =>
+                setFormData({ ...formData, address: e.target.value })
+              }
+            />
+
+            {/* Province */}
+            <Label htmlFor="province" value="Province" />
+            <TextInput
+              id="province"
+              type="text"
+              value={formData.province}
+              onChange={(e) =>
+                setFormData({ ...formData, province: e.target.value })
+              }
+            />
+
+            {/* City */}
+            <Label htmlFor="city" value="City" />
+            <TextInput
+              id="city"
+              type="text"
+              value={formData.city}
+              onChange={(e) =>
+                setFormData({ ...formData, city: e.target.value })
+              }
+            />
+
+            {/* Location Maps */}
+            <Label htmlFor="location_maps" value="Location Maps Embed Code" />
+            <TextInput
+              id="location_maps"
+              type="text"
+              value={formData.location_maps}
+              onChange={(e) =>
+                setFormData({ ...formData, location_maps: e.target.value })
+              }
+            />
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={isEditModalOpen ? updateActivity : createActivity}>
-            Save Changes
-          </Button>
+          <Button onClick={handleSubmit}>Save Changes</Button>
           <Button color="gray" onClick={closeModal}>
             Cancel
           </Button>

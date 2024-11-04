@@ -251,11 +251,7 @@ export default function ManagePromo() {
 
         <div className="flex-1 p-6 bg-gray-100">
           <h2 className="text-2xl font-bold mb-6">Manage Promos</h2>
-          <Button
-            color="green"
-            onClick={() => setIsCreateModalOpen(true)}
-            className="mb-6"
-          >
+          <Button onClick={() => setIsCreateModalOpen(true)} className="mb-6">
             Create New Promo
           </Button>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

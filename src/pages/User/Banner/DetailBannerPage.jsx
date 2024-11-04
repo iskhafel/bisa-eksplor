@@ -4,6 +4,7 @@ import axios from "axios";
 import Header from "../../../components/Header";
 import { UserContext } from "../../../context/UserContextProvider";
 import { useContext } from "react";
+import { Card } from "flowbite-react";
 
 export default function DetailBannerPage() {
   const { id } = useParams(); // Get banner ID from URL
@@ -31,12 +32,26 @@ export default function DetailBannerPage() {
   return (
     <>
       <Header user={user} />
-      <div>
-        <h1>{banner.name}</h1>
-        <img src={banner.imageUrl} alt={banner.name} />
-        <p>{banner.createdAt}</p>
-        <p>{banner.updatedAt}</p>
-        {/* Additional banner details here */}
+      <div className="min-h-screen bg-slate-900 text-white flex justify-center items-center p-4">
+        <Card className="max-w-lg bg-white text-black rounded-lg shadow-lg">
+          <img
+            src={banner.imageUrl || "https://via.placeholder.com/150"}
+            alt={banner.title}
+            className="w-full h-64 object-cover rounded-t-lg"
+            onError={(e) =>
+              (e.currentTarget.src = "https://via.placeholder.com/150")
+            }
+          />
+          <div className="p-4">
+            <h2 className="text-2xl font-bold mb-2">{banner.name}</h2>
+            <p className="text-sm text-gray-500">
+              Created at: ${banner.createdAt}
+            </p>
+            <p className="text-sm text-gray-500">
+              Updated at: ${banner.updatedAt}
+            </p>
+          </div>
+        </Card>
       </div>
     </>
   );
