@@ -28,7 +28,7 @@ const Promo = () => {
   };
 
   return (
-    <div className="w-full py-8 bg-slate-800 text-white">
+    <div className="w-full py-8 bg-slate-900 text-white mb-4">
       {/* Promo Title Section */}
       <div className="text-center mb-6">
         <h2 className="text-3xl font-bold mb-2">Special Promo For You!</h2>
@@ -50,14 +50,11 @@ const Promo = () => {
                 alt={promo.title}
                 className="w-full h-40 object-cover rounded-t-lg"
               />
-              <div className="p-4 text-center h-48 flex flex-col justify-between">
+              <div className="p-4 text-center h-32 flex flex-col justify-between">
                 <div>
                   <h3 className="text-xl font-bold text-slate-800 mb-2">
                     {promo.title}
                   </h3>
-                  <p className="text-slate-600 line-clamp-3">
-                    {promo.description}
-                  </p>
                   {promo.promo_discount_price && (
                     <p className="text-lg font-semibold text-blue-600 mt-2">
                       {promo.promo_discount_price}% Off!

@@ -5,7 +5,7 @@ import axios from "axios";
 import {
   FaHome,
   FaAtlassian,
-  // FaShoppingCart,
+  FaShoppingCart,
   FaEdit,
   FaSignOutAlt,
   FaTicketAlt,
@@ -62,12 +62,12 @@ export default function Header({ user }) {
         >
           <FaTicketAlt size={20} /> Promo
         </Link>
-        {/* <Link
+        <Link
           className="flex gap-2 text-white hover:text-gray-300 hover:underline"
           to="/cart"
         >
           <FaShoppingCart size={20} /> Cart
-        </Link> */}
+        </Link>
         {user && user.role === "admin" && (
           <Link
             className="flex gap-2 text-white hover:text-gray-300 hover:underline"

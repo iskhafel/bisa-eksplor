@@ -9,6 +9,7 @@ import PromoPage from "./pages/User/Promo/PromoPage";
 import DetailPromoPage from "./pages/User/Promo/DetailPromoPage";
 import ActivityPage from "./pages/User/Activity/ActivityPage";
 import DetailActivityPage from "./pages/User/Activity/DetailActivityPage";
+import CartPage from "./pages/User/Cart/CartPage";
 
 import UpdateProfilePage from "./pages/UpdateProfilePage";
 import ManageUser from "./pages/Admin/ManageUser";
@@ -30,6 +31,7 @@ const App = () => {
         <Route path="/activity/:id" element={<DetailActivityPage />} />
         <Route path="/promo" element={<PromoPage />} />
         <Route path="/promo/:id" element={<DetailPromoPage />} />
+        <Route path="/cart" element={<CartPage />} />
 
         <Route element={<ProtectedRoute />}>
           <Route path="/profile" element={<UpdateProfilePage />} />
