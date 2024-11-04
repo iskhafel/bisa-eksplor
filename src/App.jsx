@@ -15,6 +15,7 @@ import ManageUser from "./pages/Admin/ManageUser";
 import ManageBanner from "./pages/Admin/ManageBanner";
 import ManageCategory from "./pages/Admin/ManageCategory";
 import ManagePromo from "./pages/Admin/ManagePromo";
+import ManageActivity from "./pages/Admin/ManageActivity";
 
 const App = () => {
   return (
@@ -36,6 +37,7 @@ const App = () => {
           <Route path="/dashboard/banner" element={<ManageBanner />} />
           <Route path="/dashboard/promo" element={<ManagePromo />} />
           <Route path="/dashboard/category" element={<ManageCategory />} />
+          <Route path="/dashboard/activity" element={<ManageActivity />} />
         </Route>
       </Routes>
     </Router>

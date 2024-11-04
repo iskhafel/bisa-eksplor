@@ -9,9 +9,11 @@ import {
   FaHistory,
   FaUtensils,
 } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const Category = () => {
   const [categories, setCategories] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch categories from API
@@ -62,10 +64,11 @@ const Category = () => {
           categories.map((category) => (
             <div
               key={category.id}
-              className="cursor-pointer relative flex flex-col items-center justify-center p-6 bg-cover bg-center rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 text-white"
+              className="cursor-pointer relative flex flex-col items-center justify-center p-6 bg-cover bg-center rounded-lg shadow-md  transition-transform duration-300 hover:scale-105 hover:shadow-2xl text-white"
               style={{
                 backgroundImage: `url(${category.imageUrl})`,
               }}
+              onClick={() => navigate(`/activity`)}
             >
               {/* Overlay */}
               <div className="absolute inset-0 bg-black opacity-40 rounded-lg"></div>
