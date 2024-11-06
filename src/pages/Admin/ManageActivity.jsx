@@ -2,24 +2,8 @@ import { useContext, useState, useEffect } from "react";
 import { UserContext } from "../../context/UserContextProvider";
 import axios from "axios";
 import Header from "../../components/Header";
-import {
-  Sidebar,
-  Card,
-  Button,
-  Modal,
-  Label,
-  TextInput,
-  Select,
-} from "flowbite-react";
-import {
-  HiUser,
-  HiPhotograph,
-  HiTag,
-  HiViewGrid,
-  HiOutlineClipboardList,
-  HiShoppingCart,
-} from "react-icons/hi";
-import { Link } from "react-router-dom";
+import AdminSidebar from "../../components/AdminSidebar";
+import { Card, Button, Modal, Label, TextInput, Select } from "flowbite-react";
 
 export default function ManageActivity() {
   const { user } = useContext(UserContext);
@@ -179,47 +163,7 @@ export default function ManageActivity() {
     <>
       <Header user={user} />
       <div className="flex">
-        <Sidebar aria-label="Admin Dashboard Sidebar" className="h-full w-48">
-          {/* Sidebar links */}
-          <Sidebar.Items>
-            <Sidebar.ItemGroup>
-              <Sidebar.Item icon={HiUser} as={Link} to="/dashboard/user">
-                User
-              </Sidebar.Item>
-              <Sidebar.Item
-                icon={HiPhotograph}
-                as={Link}
-                to="/dashboard/banner"
-              >
-                Banner
-              </Sidebar.Item>
-              <Sidebar.Item icon={HiTag} as={Link} to="/dashboard/promo">
-                Promo
-              </Sidebar.Item>
-              <Sidebar.Item
-                icon={HiViewGrid}
-                as={Link}
-                to="/dashboard/category"
-              >
-                Category
-              </Sidebar.Item>
-              <Sidebar.Item
-                icon={HiOutlineClipboardList}
-                as={Link}
-                to="/dashboard/activity"
-              >
-                Activity
-              </Sidebar.Item>
-              <Sidebar.Item
-                icon={HiShoppingCart}
-                as={Link}
-                to="/dashboard/transaction"
-              >
-                Transaction
-              </Sidebar.Item>
-            </Sidebar.ItemGroup>
-          </Sidebar.Items>
-        </Sidebar>
+        <AdminSidebar />
 
         <div className="flex-1 p-6 bg-gray-100">
           <h2 className="text-2xl font-bold mb-6">Manage Activities</h2>
