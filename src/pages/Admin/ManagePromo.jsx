@@ -34,8 +34,8 @@ export default function ManagePromo() {
     description: "",
     terms_condition: "",
     promo_code: "",
-    promo_discount_price: "",
-    minimum_claim_price: "",
+    promo_discount_price: 0,
+    minimum_claim_price: 0,
   });
   const [newImage, setNewImage] = useState(null);
 
@@ -85,8 +85,8 @@ export default function ManagePromo() {
       description: "",
       terms_condition: "",
       promo_code: "",
-      promo_discount_price: "",
-      minimum_claim_price: "",
+      promo_discount_price: 0,
+      minimum_claim_price: 0,
     });
     setNewImage(null);
   };

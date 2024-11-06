@@ -2,7 +2,6 @@ import Header from "../../components/Header";
 import axios from "axios";
 import { useState, useEffect, useContext } from "react";
 import {
-  Sidebar,
   Card,
   Button,
   Modal,
@@ -10,16 +9,8 @@ import {
   TextInput,
   FileInput,
 } from "flowbite-react";
-import { Link } from "react-router-dom";
-import {
-  HiUser,
-  HiPhotograph,
-  HiTag,
-  HiViewGrid,
-  HiOutlineClipboardList,
-  HiShoppingCart,
-} from "react-icons/hi";
 import { UserContext } from "../../context/UserContextProvider";
+import AdminSidebar from "../../components/AdminSidebar";
 
 export default function ManageCategory() {
   const { user } = useContext(UserContext);
@@ -162,46 +153,7 @@ export default function ManageCategory() {
     <>
       <Header user={user} />
       <div className="flex">
-        <Sidebar aria-label="Admin Dashboard Sidebar" className="h-full w-48">
-          <Sidebar.Items>
-            <Sidebar.ItemGroup>
-              <Sidebar.Item icon={HiUser} to="/dashboard/user" as={Link}>
-                User
-              </Sidebar.Item>
-              <Sidebar.Item
-                icon={HiPhotograph}
-                to="/dashboard/banner"
-                as={Link}
-              >
-                Banner
-              </Sidebar.Item>
-              <Sidebar.Item icon={HiTag} to="/dashboard/promo" as={Link}>
-                Promo
-              </Sidebar.Item>
-              <Sidebar.Item
-                icon={HiViewGrid}
-                to="/dashboard/category"
-                as={Link}
-              >
-                Category
-              </Sidebar.Item>
-              <Sidebar.Item
-                icon={HiOutlineClipboardList}
-                to="/dashboard/activity"
-                as={Link}
-              >
-                Activity
-              </Sidebar.Item>
-              <Sidebar.Item
-                icon={HiShoppingCart}
-                to="/dashboard/transaction"
-                as={Link}
-              >
-                Transaction
-              </Sidebar.Item>
-            </Sidebar.ItemGroup>
-          </Sidebar.Items>
-        </Sidebar>
+        <AdminSidebar />
 
         <div className="flex-1 p-6 bg-gray-100">
           <h2 className="text-2xl font-bold mb-6">Manage Categories</h2>

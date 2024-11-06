@@ -10,6 +10,8 @@ import DetailPromoPage from "./pages/User/Promo/DetailPromoPage";
 import ActivityPage from "./pages/User/Activity/ActivityPage";
 import DetailActivityPage from "./pages/User/Activity/DetailActivityPage";
 import CartPage from "./pages/User/Cart/CartPage";
+import TransactionPage from "./pages/User/Transaction/TransactionPage";
+import DetailTransactionPage from "./pages/User/Transaction/DetailTransactionPage";
 
 import UpdateProfilePage from "./pages/UpdateProfilePage";
 import ManageUser from "./pages/Admin/ManageUser";
@@ -17,6 +19,7 @@ import ManageBanner from "./pages/Admin/ManageBanner";
 import ManageCategory from "./pages/Admin/ManageCategory";
 import ManagePromo from "./pages/Admin/ManagePromo";
 import ManageActivity from "./pages/Admin/ManageActivity";
+import ManageTransaction from "./pages/Admin/ManageTransaction";
 
 const App = () => {
   return (
@@ -32,6 +35,8 @@ const App = () => {
         <Route path="/promo" element={<PromoPage />} />
         <Route path="/promo/:id" element={<DetailPromoPage />} />
         <Route path="/cart" element={<CartPage />} />
+        <Route path="/transaction" element={<TransactionPage />} />
+        <Route path="/transaction/:id" element={<DetailTransactionPage />} />
 
         <Route element={<ProtectedRoute />}>
           <Route path="/profile" element={<UpdateProfilePage />} />
@@ -40,6 +45,10 @@ const App = () => {
           <Route path="/dashboard/promo" element={<ManagePromo />} />
           <Route path="/dashboard/category" element={<ManageCategory />} />
           <Route path="/dashboard/activity" element={<ManageActivity />} />
+          <Route
+            path="/dashboard/transaction"
+            element={<ManageTransaction />}
+          />
         </Route>
       </Routes>
     </Router>
