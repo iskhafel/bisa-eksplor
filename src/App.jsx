@@ -11,7 +11,6 @@ import ActivityPage from "./pages/User/Activity/ActivityPage";
 import DetailActivityPage from "./pages/User/Activity/DetailActivityPage";
 import CartPage from "./pages/User/Cart/CartPage";
 import TransactionPage from "./pages/User/Transaction/TransactionPage";
-import DetailTransactionPage from "./pages/User/Transaction/DetailTransactionPage";
 
 import UpdateProfilePage from "./pages/UpdateProfilePage";
 import ManageUser from "./pages/Admin/ManageUser";
@@ -36,7 +35,6 @@ const App = () => {
         <Route path="/promo/:id" element={<DetailPromoPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/transaction" element={<TransactionPage />} />
-        <Route path="/transaction/:id" element={<DetailTransactionPage />} />
 
         <Route element={<ProtectedRoute />}>
           <Route path="/profile" element={<UpdateProfilePage />} />

@@ -11,6 +11,8 @@ import {
   FaTicketAlt,
   FaTachometerAlt,
 } from "react-icons/fa";
+import { GrTransaction } from "react-icons/gr";
+
 import { HiMenuAlt3 } from "react-icons/hi";
 
 export default function Header({ user }) {
@@ -65,6 +67,12 @@ export default function Header({ user }) {
               onClick={() => navigate("/profile")}
             >
               <FaEdit /> Profile
+            </Dropdown.Item>
+            <Dropdown.Item
+              className="flex gap-2"
+              onClick={() => navigate("/transaction")}
+            >
+              <GrTransaction /> My Transaction
             </Dropdown.Item>
             <Dropdown.Divider />
             <Dropdown.Item className="flex gap-2" onClick={handleLogout}>
@@ -135,6 +143,12 @@ export default function Header({ user }) {
               onClick={() => navigate("/profile")}
             >
               <FaEdit /> Profile
+            </Dropdown.Item>
+            <Dropdown.Item
+              className="flex gap-2"
+              onClick={() => navigate("/transaction")}
+            >
+              <GrTransaction /> My Transaction
             </Dropdown.Item>
             <Dropdown.Divider />
             <Dropdown.Item className="flex gap-2" onClick={handleLogout}>

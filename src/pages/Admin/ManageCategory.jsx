@@ -25,6 +25,7 @@ export default function ManageCategory() {
   const [newImage, setNewImage] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [newTitle, setNewTitle] = useState("");
+  const fallbackImage = "https://via.placeholder.com/150";
 
   useEffect(() => {
     fetchCategories();
@@ -164,9 +165,10 @@ export default function ManageCategory() {
             {categories.map((category) => (
               <Card key={category.id} className="bg-white shadow-lg">
                 <img
-                  src={category.imageUrl}
+                  src={category.imageUrl || fallbackImage}
                   alt={category.name}
                   className="h-40 w-full object-cover rounded-t-lg"
+                  onError={(e) => (e.target.src = fallbackImage)}
                 />
                 <div className="p-4 text-center">
                   <h3 className="text-xl font-bold text-slate-800 mb-2">

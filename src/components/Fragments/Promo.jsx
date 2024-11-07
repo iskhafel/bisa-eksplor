@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 const Promo = () => {
   const [promos, setPromos] = useState([]);
   const navigate = useNavigate();
+  const fallbackImage = "https://via.placeholder.com/150";
 
   useEffect(() => {
     // Fetch promos from API
@@ -46,9 +47,10 @@ const Promo = () => {
             >
               {/* Image Section with Cropping */}
               <img
-                src={promo.imageUrl}
+                src={promo.imageUrl || fallbackImage}
                 alt={promo.title}
                 className="w-full h-40 object-cover rounded-t-lg"
+                onError={(e) => (e.target.src = fallbackImage)}
               />
               <div className="p-4 text-center h-32 flex flex-col justify-between">
                 <div>

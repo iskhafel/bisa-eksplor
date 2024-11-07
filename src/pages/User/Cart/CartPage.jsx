@@ -2,16 +2,19 @@ import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import Header from "../../../components/Header";
 import { UserContext } from "../../../context/UserContextProvider";
-import { Button, TextInput, Card } from "flowbite-react";
+import { Button, TextInput, Card, Select, Label } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
 
 export default function CartPage() {
   const { user } = useContext(UserContext);
   const [cartItems, setCartItems] = useState([]);
+  const [paymentMethods, setPaymentMethods] = useState([]);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchCartItems();
+    fetchPaymentMethods();
   }, []);
 
   // Fetch all items in the cart
@@ -30,6 +33,25 @@ export default function CartPage() {
       setCartItems(response.data.data);
     } catch (error) {
       console.error("Failed to fetch cart items:", error);
+    }
+  };
+
+  // Fetch available payment methods
+  const fetchPaymentMethods = async () => {
+    const token = localStorage.getItem("JWT_TOKEN");
+    try {
+      const response = await axios.get(
+        "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/payment-methods",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
+          },
+        }
+      );
+      setPaymentMethods(response.data.data);
+    } catch (error) {
+      console.error("Failed to fetch payment methods:", error);
     }
   };
 
@@ -77,9 +99,34 @@ export default function CartPage() {
     return sum + item.activity.price * item.quantity;
   }, 0);
 
-  // Handle checkout
-  const handleCheckout = () => {
-    navigate("/transaction");
+  // Create Transaction and Navigate
+  const createTransaction = async () => {
+    const token = localStorage.getItem("JWT_TOKEN");
+
+    // Collect the cart item IDs
+    const cartIds = cartItems.map((item) => item.id);
+
+    if (!selectedPaymentMethod) {
+      alert("Please select a payment method.");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/create-transaction",
+        { cartIds, paymentMethodId: selectedPaymentMethod },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
+          },
+        }
+      );
+      const transactionId = response.data.data.id;
+      navigate(`/transaction/${transactionId}`);
+    } catch (error) {
+      console.error("Failed to create transaction:", error);
+    }
   };
 
   return (
@@ -134,12 +181,28 @@ export default function CartPage() {
               ))}
             </div>
 
-            {/* Display Total and Checkout Button */}
             <div className="mt-6 p-4 bg-white shadow rounded-lg">
               <h3 className="text-xl font-semibold">
                 Total: ${totalAmount.toFixed(2)}
               </h3>
-              <Button onClick={handleCheckout} className="mt-4 w-full">
+
+              {/* Payment Method Selection */}
+              <Label htmlFor="paymentMethod" value="Select Payment Method" />
+              <Select
+                id="paymentMethod"
+                required
+                value={selectedPaymentMethod}
+                onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+              >
+                <option value="">Choose Payment Method</option>
+                {paymentMethods.map((method) => (
+                  <option key={method.id} value={method.id}>
+                    {method.name}
+                  </option>
+                ))}
+              </Select>
+
+              <Button onClick={createTransaction} className="mt-4 w-full">
                 Proceed to Checkout
               </Button>
             </div>
