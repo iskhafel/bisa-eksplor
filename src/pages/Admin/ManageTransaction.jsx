@@ -8,9 +8,15 @@ import AdminSidebar from "../../components/AdminSidebar";
 export default function ManageTransaction() {
   const { user } = useContext(UserContext);
   const [transactions, setTransactions] = useState([]);
-  const [selectedTransaction, setSelectedTransaction] = useState(null);
+  const [selectedTransaction, setSelectedTransaction] = useState({
+    id: "",
+    status: "",
+    totalAmount: 0,
+    items: [],
+  });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [status, setStatus] = useState("");
+  const fallbackImage = "https://via.placeholder.com/150";
 
   useEffect(() => {
     fetchAllTransactions();
@@ -35,7 +41,7 @@ export default function ManageTransaction() {
     }
   };
 
-  // Fetch transaction details by ID
+  // Fetch transaction details by ID if status is "Pending"
   const fetchTransactionById = async (transactionId) => {
     const token = localStorage.getItem("JWT_TOKEN");
     try {
@@ -48,15 +54,15 @@ export default function ManageTransaction() {
           },
         }
       );
-      setSelectedTransaction(response.data.data);
-      setStatus(response.data.data.status);
+      setSelectedTransaction(response.data.data || {});
+      setStatus(response.data.data?.status || "");
       setIsModalOpen(true);
     } catch (error) {
       console.error("Failed to fetch transaction details:", error);
     }
   };
 
-  // Update transaction status
+  // Update transaction status if it's "Pending"
   const updateTransactionStatus = async (transactionId) => {
     const token = localStorage.getItem("JWT_TOKEN");
     try {
@@ -94,12 +100,14 @@ export default function ManageTransaction() {
                 </p>
                 <p>Status: {transaction.status}</p>
                 <p>Total Amount: ${transaction.totalAmount}</p>
-                <Button
-                  onClick={() => fetchTransactionById(transaction.id)}
-                  className="mt-4 w-full"
-                >
-                  View & Edit Status
-                </Button>
+                {transaction.status === "pending" && (
+                  <Button
+                    onClick={() => fetchTransactionById(transaction.id)}
+                    className="mt-4 w-full"
+                  >
+                    View & Update Status
+                  </Button>
+                )}
               </Card>
             ))}
           </div>
@@ -120,11 +128,19 @@ export default function ManageTransaction() {
                     <strong>Total Amount:</strong> $
                     {selectedTransaction.totalAmount}
                   </p>
-                  <p>
-                    <strong>Items:</strong>
-                  </p>
+
+                  {selectedTransaction.proofPaymentUrl ? (
+                    <img
+                      src={selectedTransaction.proofPaymentUrl || fallbackImage}
+                      className="mt-2 w-flAmounauto max-w-xs rounded-lg shadow-md"
+                      onError={(e) => (e.currentTarget.src = fallbackImage)}
+                    />
+                  ) : (
+                    <p>No proof of payment available.</p>
+                  )}
+
                   <ul>
-                    {selectedTransaction.items.map((item) => (
+                    {selectedTransaction.items?.map((item) => (
                       <li key={item.itemId}>
                         {item.name} - {item.quantity} x ${item.price}
                       </li>
@@ -137,9 +153,9 @@ export default function ManageTransaction() {
                       onChange={(e) => setStatus(e.target.value)}
                       className="w-full"
                     >
-                      <option value="Pending">Pending</option>
-                      <option value="Completed">Completed</option>
-                      <option value="Cancelled">Cancelled</option>
+                      <option value="">Choose Status</option>
+                      <option value="success">Success</option>
+                      <option value="failed">Failed</option>
                     </Select>
                   </div>
                 </div>

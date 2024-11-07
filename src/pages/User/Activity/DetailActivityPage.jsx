@@ -3,7 +3,7 @@ import { UserContext } from "../../../context/UserContextProvider";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import Header from "../../../components/Header";
-import { Button, Card } from "flowbite-react";
+import { Button, Card, Carousel } from "flowbite-react";
 
 export default function DetailActivityPage() {
   const { user } = useContext(UserContext);
@@ -55,15 +55,21 @@ export default function DetailActivityPage() {
       <Header user={user} />
       <div className="min-h-screen bg-slate-900 text-white flex justify-center items-center p-4">
         {activity ? (
-          <Card className="max-w-lg bg-white text-black rounded-lg shadow-lg">
-            <img
-              src={activity.imageUrls[0] || "https://via.placeholder.com/150"}
-              alt={activity.title}
-              className="w-full h-64 object-cover rounded-t-lg"
-              onError={(e) =>
-                (e.currentTarget.src = "https://via.placeholder.com/150")
-              }
-            />
+          <Card className="max-w-2xl bg-white text-black rounded-lg shadow-lg relative">
+            {/* Carousel with Banner Style */}
+            <Carousel indicators={false} className="w-full h-80">
+              {activity.imageUrls.map((imageUrl, index) => (
+                <img
+                  key={index}
+                  src={imageUrl || "https://via.placeholder.com/150"}
+                  alt={activity.title}
+                  className="w-full h-80 object-cover rounded-t-lg"
+                  onError={(e) =>
+                    (e.currentTarget.src = "https://via.placeholder.com/150")
+                  }
+                />
+              ))}
+            </Carousel>
             <div className="p-4">
               <h2 className="text-2xl font-bold mb-2">{activity.title}</h2>
               <p className="text-sm text-gray-700 mb-2">
@@ -81,6 +87,17 @@ export default function DetailActivityPage() {
               <Button onClick={handleAddToCart} className="mt-4">
                 Add to Cart
               </Button>
+
+              {/* Location Map with Dangerous HTML */}
+              {activity.location_maps && (
+                <div className="mt-4">
+                  <h3 className="text-lg font-semibold mb-2">Location Map</h3>
+                  <div
+                    dangerouslySetInnerHTML={{ __html: activity.location_maps }}
+                    className="w-full h-64 rounded-lg overflow-hidden"
+                  ></div>
+                </div>
+              )}
             </div>
           </Card>
         ) : (

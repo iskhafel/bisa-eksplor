@@ -47,6 +47,7 @@ export default function DetailPromoPage() {
             </p>
             <p className="text-sm text-gray-500 py-2">
               Terms and Conditions:
+              <br />
               <span
                 dangerouslySetInnerHTML={{ __html: promo.terms_condition }}
               />

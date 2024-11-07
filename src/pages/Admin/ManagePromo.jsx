@@ -125,6 +125,8 @@ export default function ManagePromo() {
           {
             ...formData,
             imageUrl,
+            promo_discount_price: Number(formData.promo_discount_price),
+            minimum_claim_price: Number(formData.minimum_claim_price),
           },
           {
             headers: {
@@ -160,6 +162,8 @@ export default function ManagePromo() {
           {
             ...formData,
             imageUrl,
+            promo_discount_price: Number(formData.promo_discount_price),
+            minimum_claim_price: Number(formData.minimum_claim_price),
           },
           {
             headers: {
