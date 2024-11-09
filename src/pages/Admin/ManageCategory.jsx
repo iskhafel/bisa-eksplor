@@ -8,6 +8,7 @@ import {
   Label,
   TextInput,
   FileInput,
+  Toast,
 } from "flowbite-react";
 import { UserContext } from "../../context/UserContextProvider";
 import AdminSidebar from "../../components/AdminSidebar";
@@ -26,6 +27,15 @@ export default function ManageCategory() {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [newTitle, setNewTitle] = useState("");
   const fallbackImage = "https://via.placeholder.com/150";
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+
+  // Show Toast with Message
+  const showToastMessage = (message) => {
+    setToastMessage(message);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+  };
 
   useEffect(() => {
     fetchCategories();
@@ -76,12 +86,21 @@ export default function ManageCategory() {
 
   const createCategory = async () => {
     const token = localStorage.getItem("JWT_TOKEN");
+
+    if (!formData.name) {
+      showToastMessage("Please enter a title for the category.");
+      return;
+    }
+
+    // Ensure an image is uploaded
+    if (!newImage) {
+      showToastMessage("Please upload an image to create the category.");
+      return;
+    }
+
     try {
-      let imageUrl = "";
-      if (newImage) {
-        const uploadResponse = await uploadImage(newImage);
-        imageUrl = uploadResponse.data.url;
-      }
+      const uploadResponse = await uploadImage(newImage);
+      const imageUrl = uploadResponse.data.url;
 
       await axios.post(
         "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/create-category",
@@ -96,8 +115,10 @@ export default function ManageCategory() {
 
       fetchCategories();
       closeModal();
+      showToastMessage("Category created successfully!");
     } catch (error) {
       console.error("Failed to create category:", error);
+      showToastMessage("Failed to create category.");
     }
   };
 
@@ -129,8 +150,10 @@ export default function ManageCategory() {
 
       fetchCategories();
       closeModal();
+      showToastMessage("Category updated successfully!");
     } catch (error) {
       console.error("Failed to update category:", error);
+      showToastMessage("Failed to update category.");
     }
   };
 
@@ -146,8 +169,14 @@ export default function ManageCategory() {
           },
         }
       )
-      .then(() => fetchCategories())
-      .catch((error) => console.error("Failed to delete category:", error));
+      .then(() => {
+        fetchCategories();
+        showToastMessage("Category deleted successfully!");
+      })
+      .catch((error) => {
+        console.error("Failed to delete category:", error);
+        showToastMessage("Failed to delete category.");
+      });
   };
 
   return (
@@ -192,63 +221,91 @@ export default function ManageCategory() {
         </div>
       </div>
 
-      {/* Create Category Modal */}
-      <Modal show={isModalOpen} onClose={closeModal}>
-        <Modal.Header>Create New Category</Modal.Header>
-        <Modal.Body>
-          <Label htmlFor="name" value="Name" />
-          <TextInput
-            id="name"
-            type="text"
-            placeholder="Enter category name"
-            value={formData.name}
-            onChange={(e) =>
-              setFormData((prev) => ({ ...prev, name: e.target.value }))
-            }
-            required
-          />
-          <Label htmlFor="newImage" value="Image" />
-          <FileInput
-            id="newImage"
-            onChange={(e) => setNewImage(e.target.files[0])}
-          />
-        </Modal.Body>
-        <Modal.Footer>
-          <Button onClick={createCategory}>Create Category</Button>
-          <Button color="gray" onClick={closeModal}>
-            Cancel
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <div>
+        {/* Toast Notification Outside Modal Context */}
+        {showToast && (
+          <div
+            className="fixed bottom-4 right-4 z-50" // High z-index ensures it appears above modal overlay
+          >
+            <Toast>
+              <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-500">
+                <svg
+                  className="h-5 w-5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414L8.414 15l-4.707-4.707a1 1 0 011.414-1.414L8.414 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div className="ml-3 text-sm font-normal">{toastMessage}</div>
+              <Toast.Toggle />
+            </Toast>
+          </div>
+        )}
 
-      {/* Edit Category Modal */}
-      {selectedCategory && (
-        <Modal show={isEditModalOpen} onClose={closeModal}>
-          <Modal.Header>Edit Category</Modal.Header>
+        {/* Create Category Modal */}
+        <Modal show={isModalOpen} onClose={closeModal} className="z-10">
+          <Modal.Header>Create New Category</Modal.Header>
           <Modal.Body>
-            <Label htmlFor="editTitle" value="Name" />
+            <Label htmlFor="name" value="Name" />
             <TextInput
-              id="editTitle"
+              id="name"
               type="text"
-              placeholder={selectedCategory.name}
-              value={newTitle}
-              onChange={(e) => setNewTitle(e.target.value)}
+              placeholder="Enter category name"
+              value={formData.name}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, name: e.target.value }))
+              }
               required
             />
-            <Label htmlFor="editImage" value="Image" />
+            <Label htmlFor="newImage" value="Image" />
             <FileInput
-              id="editImage"
+              id="newImage"
               onChange={(e) => setNewImage(e.target.files[0])}
             />
           </Modal.Body>
           <Modal.Footer>
-            <Button onClick={updateCategory}>Save Changes</Button>
+            <Button onClick={createCategory}>Create Category</Button>
             <Button color="gray" onClick={closeModal}>
               Cancel
             </Button>
           </Modal.Footer>
         </Modal>
-      )}
+
+        {/* Edit Category Modal */}
+        {selectedCategory && (
+          <Modal show={isEditModalOpen} onClose={closeModal}>
+            <Modal.Header>Edit Category</Modal.Header>
+            <Modal.Body>
+              <Label htmlFor="editTitle" value="Name" />
+              <TextInput
+                id="editTitle"
+                type="text"
+                placeholder={selectedCategory.name}
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
+                required
+              />
+              <Label htmlFor="editImage" value="Image" />
+              <FileInput
+                id="editImage"
+                onChange={(e) => setNewImage(e.target.files[0])}
+              />
+            </Modal.Body>
+            <Modal.Footer>
+              <Button onClick={updateCategory}>Save Changes</Button>
+              <Button color="gray" onClick={closeModal}>
+                Cancel
+              </Button>
+            </Modal.Footer>
+          </Modal>
+        )}
+      </div>
     </>
   );
 }

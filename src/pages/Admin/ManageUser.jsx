@@ -2,7 +2,15 @@ import Header from "../../components/Header";
 import axios from "axios";
 import { useState, useEffect, useContext } from "react";
 import { UserContext } from "../../context/UserContextProvider";
-import { Card, Button, Modal, Label, Select, Pagination } from "flowbite-react";
+import {
+  Card,
+  Button,
+  Modal,
+  Label,
+  Select,
+  Pagination,
+  Toast,
+} from "flowbite-react";
 import AdminSidebar from "../../components/AdminSidebar";
 
 export default function ManageUser() {
@@ -11,7 +19,8 @@ export default function ManageUser() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [newRole, setNewRole] = useState("");
-
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
   const fallbackImage = "https://via.placeholder.com/150";
@@ -67,9 +76,17 @@ export default function ManageUser() {
             u.id === selectedUser.id ? { ...u, role: newRole } : u
           )
         );
+        setToastMessage("User role updated successfully!");
+        setShowToast(true);
         closeModal();
+        setTimeout(() => setShowToast(false), 3000);
       })
-      .catch((error) => console.error("Failed to update user role:", error));
+      .catch((error) => {
+        console.error("Failed to update user role:", error);
+        setToastMessage("Failed to update user role. Please try again.");
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
+      });
   };
 
   // Pagination Logic
@@ -132,6 +149,30 @@ export default function ManageUser() {
           </div>
         </div>
       </div>
+
+      {/* Success or Error Toast */}
+      {showToast && (
+        <div className="fixed bottom-4 right-4">
+          <Toast>
+            <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-500">
+              <svg
+                className="h-5 w-5"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414L8.414 15l-4.707-4.707a1 1 0 011.414-1.414L8.414 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+            <div className="ml-3 text-sm font-normal">{toastMessage}</div>
+            <Toast.Toggle />
+          </Toast>
+        </div>
+      )}
 
       {selectedUser && (
         <Modal show={isModalOpen} onClose={closeModal}>

@@ -3,7 +3,15 @@ import { UserContext } from "../../context/UserContextProvider";
 import axios from "axios";
 import Header from "../../components/Header";
 import AdminSidebar from "../../components/AdminSidebar";
-import { Card, Button, Modal, Label, TextInput, Select } from "flowbite-react";
+import {
+  Card,
+  Button,
+  Modal,
+  Label,
+  TextInput,
+  Select,
+  Toast,
+} from "flowbite-react";
 
 export default function ManageActivity() {
   const { user } = useContext(UserContext);
@@ -28,6 +36,15 @@ export default function ManageActivity() {
     location_maps: "",
   });
   const [newImages, setNewImages] = useState([]);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+
+  // Show Toast with Message
+  const showToastMessage = (message) => {
+    setToastMessage(message);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+  };
 
   useEffect(() => {
     fetchCategoriesAndActivities();
@@ -111,6 +128,21 @@ export default function ManageActivity() {
 
   const handleSubmit = async () => {
     const token = localStorage.getItem("JWT_TOKEN");
+    if (!formData.title) {
+      showToastMessage("Please enter a title for the activity.");
+      return;
+    }
+
+    if (!formData.categoryId) {
+      showToastMessage("Please select a category for the activity.");
+      return;
+    }
+
+    if (newImages.length === 0) {
+      showToastMessage("Please upload at least one image for the activity.");
+      return;
+    }
+
     try {
       const imageUrls = await uploadImages();
       const activityData = { ...formData, imageUrls };
@@ -128,8 +160,14 @@ export default function ManageActivity() {
 
       fetchCategoriesAndActivities();
       closeModal();
+      showToastMessage(
+        isEditModalOpen
+          ? "Activity updated successfully!"
+          : "Activity created successfully!"
+      );
     } catch (error) {
       console.error("Failed to submit form:", error);
+      showToastMessage("Failed to submit form. Please try again.");
     }
   };
 
@@ -153,9 +191,11 @@ export default function ManageActivity() {
       )
       .then(() => {
         fetchCategoriesAndActivities();
+        showToastMessage("Activity deleted successfully!");
       })
       .catch((error) => {
         console.error("Failed to delete activity:", error);
+        showToastMessage("Failed to delete activity. Please try again.");
       });
   };
 
@@ -210,168 +250,198 @@ export default function ManageActivity() {
         </div>
       </div>
 
-      <Modal show={isCreateModalOpen || isEditModalOpen} onClose={closeModal}>
-        <Modal.Header>
-          {isEditModalOpen ? "Edit Activity" : "Create Activity"}
-        </Modal.Header>
-        <Modal.Body>
-          <div className="">
-            <Label htmlFor="title" value="Title" />
-            <TextInput
-              id="title"
-              type="text"
-              value={formData.title}
-              onChange={(e) =>
-                setFormData({ ...formData, title: e.target.value })
-              }
-              required
-            />
-            <Label htmlFor="category" value="Category" />
-            <Select
-              id="category"
-              value={formData.categoryId}
-              onChange={(e) =>
-                setFormData({ ...formData, categoryId: e.target.value })
-              }
-              required
-            >
-              <option value="">Select Category</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </Select>
-            <Label htmlFor="description" value="Description" />
-            <TextInput
-              id="description"
-              type="text"
-              value={formData.description}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
-            />
-            <Label htmlFor="imageUrls" value="Upload Images" />
-            <input
-              id="imageUrls"
-              type="file"
-              multiple
-              onChange={(e) => setNewImages([...e.target.files])}
-              className="block w-full text-sm text-gray-500 border border-gray-300 rounded-lg cursor-pointer focus:outline-none"
-            />
-            {/* Price */}
-            <Label htmlFor="price" value="Price" />
-            <TextInput
-              id="price"
-              type="number"
-              value={formData.price}
-              onChange={(e) =>
-                setFormData({ ...formData, price: parseInt(e.target.value) })
-              }
-            />
-
-            {/* Price Discount */}
-            <Label htmlFor="price_discount" value="Discounted Price" />
-            <TextInput
-              id="price_discount"
-              type="number"
-              value={formData.price_discount}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  price_discount: parseInt(e.target.value),
-                })
-              }
-            />
-
-            {/* Rating */}
-            <Label htmlFor="rating" value="Rating" />
-            <TextInput
-              id="rating"
-              type="number"
-              value={formData.rating}
-              onChange={(e) =>
-                setFormData({ ...formData, rating: parseInt(e.target.value) })
-              }
-            />
-
-            {/* Total Reviews */}
-            <Label htmlFor="total_reviews" value="Total Reviews" />
-            <TextInput
-              id="total_reviews"
-              type="number"
-              value={formData.total_reviews}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  total_reviews: parseInt(e.target.value),
-                })
-              }
-            />
-
-            {/* Facilities */}
-            <Label htmlFor="facilities" value="Facilities" />
-            <TextInput
-              id="facilities"
-              type="text"
-              value={formData.facilities}
-              onChange={(e) =>
-                setFormData({ ...formData, facilities: e.target.value })
-              }
-            />
-
-            {/* Address */}
-            <Label htmlFor="address" value="Address" />
-            <TextInput
-              id="address"
-              type="text"
-              value={formData.address}
-              onChange={(e) =>
-                setFormData({ ...formData, address: e.target.value })
-              }
-            />
-
-            {/* Province */}
-            <Label htmlFor="province" value="Province" />
-            <TextInput
-              id="province"
-              type="text"
-              value={formData.province}
-              onChange={(e) =>
-                setFormData({ ...formData, province: e.target.value })
-              }
-            />
-
-            {/* City */}
-            <Label htmlFor="city" value="City" />
-            <TextInput
-              id="city"
-              type="text"
-              value={formData.city}
-              onChange={(e) =>
-                setFormData({ ...formData, city: e.target.value })
-              }
-            />
-
-            {/* Location Maps */}
-            <Label htmlFor="location_maps" value="Location Maps Embed Code" />
-            <TextInput
-              id="location_maps"
-              type="text"
-              value={formData.location_maps}
-              onChange={(e) =>
-                setFormData({ ...formData, location_maps: e.target.value })
-              }
-            />
+      <div>
+        {/* Toast Notification */}
+        {showToast && (
+          <div className="fixed bottom-4 right-4 z-50">
+            <Toast>
+              <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-500">
+                <svg
+                  className="h-5 w-5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414L8.414 15l-4.707-4.707a1 1 0 011.414-1.414L8.414 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div className="ml-3 text-sm font-normal">{toastMessage}</div>
+              <Toast.Toggle />
+            </Toast>
           </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button onClick={handleSubmit}>Save Changes</Button>
-          <Button color="gray" onClick={closeModal}>
-            Cancel
-          </Button>
-        </Modal.Footer>
-      </Modal>
+        )}
+
+        <Modal
+          show={isCreateModalOpen || isEditModalOpen}
+          onClose={closeModal}
+          className="z-10"
+        >
+          <Modal.Header>
+            {isEditModalOpen ? "Edit Activity" : "Create Activity"}
+          </Modal.Header>
+          <Modal.Body>
+            <div className="">
+              <Label htmlFor="title" value="Title" />
+              <TextInput
+                id="title"
+                type="text"
+                value={formData.title}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
+                required
+              />
+              <Label htmlFor="category" value="Category" />
+              <Select
+                id="category"
+                value={formData.categoryId}
+                onChange={(e) =>
+                  setFormData({ ...formData, categoryId: e.target.value })
+                }
+                required
+              >
+                <option value="">Select Category</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </Select>
+              <Label htmlFor="description" value="Description" />
+              <TextInput
+                id="description"
+                type="text"
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+              />
+              <Label htmlFor="imageUrls" value="Upload Images" />
+              <input
+                id="imageUrls"
+                type="file"
+                multiple
+                onChange={(e) => setNewImages([...e.target.files])}
+                className="block w-full text-sm text-gray-500 border border-gray-300 rounded-lg cursor-pointer focus:outline-none"
+              />
+              {/* Price */}
+              <Label htmlFor="price" value="Price" />
+              <TextInput
+                id="price"
+                type="number"
+                value={formData.price}
+                onChange={(e) =>
+                  setFormData({ ...formData, price: parseInt(e.target.value) })
+                }
+              />
+
+              {/* Price Discount */}
+              <Label htmlFor="price_discount" value="Discounted Price" />
+              <TextInput
+                id="price_discount"
+                type="number"
+                value={formData.price_discount}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    price_discount: parseInt(e.target.value),
+                  })
+                }
+              />
+
+              {/* Rating */}
+              <Label htmlFor="rating" value="Rating" />
+              <TextInput
+                id="rating"
+                type="number"
+                value={formData.rating}
+                onChange={(e) =>
+                  setFormData({ ...formData, rating: parseInt(e.target.value) })
+                }
+              />
+
+              {/* Total Reviews */}
+              <Label htmlFor="total_reviews" value="Total Reviews" />
+              <TextInput
+                id="total_reviews"
+                type="number"
+                value={formData.total_reviews}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    total_reviews: parseInt(e.target.value),
+                  })
+                }
+              />
+
+              {/* Facilities */}
+              <Label htmlFor="facilities" value="Facilities" />
+              <TextInput
+                id="facilities"
+                type="text"
+                value={formData.facilities}
+                onChange={(e) =>
+                  setFormData({ ...formData, facilities: e.target.value })
+                }
+              />
+
+              {/* Address */}
+              <Label htmlFor="address" value="Address" />
+              <TextInput
+                id="address"
+                type="text"
+                value={formData.address}
+                onChange={(e) =>
+                  setFormData({ ...formData, address: e.target.value })
+                }
+              />
+
+              {/* Province */}
+              <Label htmlFor="province" value="Province" />
+              <TextInput
+                id="province"
+                type="text"
+                value={formData.province}
+                onChange={(e) =>
+                  setFormData({ ...formData, province: e.target.value })
+                }
+              />
+
+              {/* City */}
+              <Label htmlFor="city" value="City" />
+              <TextInput
+                id="city"
+                type="text"
+                value={formData.city}
+                onChange={(e) =>
+                  setFormData({ ...formData, city: e.target.value })
+                }
+              />
+
+              {/* Location Maps */}
+              <Label htmlFor="location_maps" value="Location Maps Embed Code" />
+              <TextInput
+                id="location_maps"
+                type="text"
+                value={formData.location_maps}
+                onChange={(e) =>
+                  setFormData({ ...formData, location_maps: e.target.value })
+                }
+              />
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={handleSubmit}>Save Changes</Button>
+            <Button color="gray" onClick={closeModal}>
+              Cancel
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </div>
     </>
   );
 }

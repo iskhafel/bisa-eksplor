@@ -11,6 +11,7 @@ import {
   TextInput,
   FileInput,
   Textarea,
+  Toast,
 } from "flowbite-react";
 import {
   HiUser,
@@ -38,6 +39,15 @@ export default function ManagePromo() {
     minimum_claim_price: 0,
   });
   const [newImage, setNewImage] = useState(null);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+
+  // Show Toast with Message
+  const showToastMessage = (message) => {
+    setToastMessage(message);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+  };
 
   const fetchPromos = () => {
     const token = localStorage.getItem("JWT_TOKEN");
@@ -118,6 +128,17 @@ export default function ManagePromo() {
   const createPromo = () => {
     const token = localStorage.getItem("JWT_TOKEN");
 
+    if (!formData.title) {
+      showToastMessage("Please enter a title for the banner.");
+      return;
+    }
+
+    // Ensure an image is uploaded
+    if (!newImage) {
+      showToastMessage("Please upload an image to create the banner.");
+      return;
+    }
+
     uploadImage(newImage)
       .then((imageUrl) => {
         return axios.post(
@@ -139,9 +160,11 @@ export default function ManagePromo() {
       .then(() => {
         fetchPromos();
         closeModal();
+        showToastMessage("Promo created successfully!");
       })
       .catch((error) => {
         console.error("Failed to create promo:", error);
+        showToastMessage("Failed to create promo.");
       });
   };
 
@@ -176,9 +199,11 @@ export default function ManagePromo() {
       .then(() => {
         fetchPromos();
         closeModal();
+        showToastMessage("Promo updated successfully!");
       })
       .catch((error) => {
         console.error("Failed to update promo:", error);
+        showToastMessage("Failed to update promo.");
       });
   };
 
@@ -197,9 +222,11 @@ export default function ManagePromo() {
       )
       .then(() => {
         fetchPromos();
+        showToastMessage("Promo deleted successfully!");
       })
       .catch((error) => {
         console.error("Failed to delete promo:", error);
+        showToastMessage("Failed to delete promo.");
       });
   };
 
@@ -288,139 +315,173 @@ export default function ManagePromo() {
         </div>
       </div>
 
-      {/* Create Promo Modal */}
-      <Modal show={isCreateModalOpen} onClose={closeModal}>
-        <Modal.Header>Create New Promo</Modal.Header>
-        <Modal.Body>
-          <div className="">
-            <Label htmlFor="newTitle" value="Title" />
-            <TextInput
-              id="title"
-              type="text"
-              placeholder="Enter promo title"
-              value={formData.title}
-              onChange={handleChange}
-              required
-            />
-            <Label htmlFor="description" value="Description" />
-            <Textarea
-              id="description"
-              placeholder="Enter description"
-              value={formData.description}
-              onChange={handleChange}
-            />
-            <Label htmlFor="terms_condition" value="Terms and Conditions" />
-            <Textarea
-              id="terms_condition"
-              placeholder="Enter terms and conditions"
-              value={formData.terms_condition}
-              onChange={handleChange}
-            />
-            <Label htmlFor="promo_code" value="Promo Code" />
-            <TextInput
-              id="promo_code"
-              type="text"
-              placeholder="Enter promo code"
-              value={formData.promo_code}
-              onChange={handleChange}
-            />
-            <Label htmlFor="promo_discount_price" value="Discount Price" />
-            <TextInput
-              id="promo_discount_price"
-              type="number"
-              placeholder="Enter discount price"
-              value={formData.promo_discount_price}
-              onChange={handleChange}
-            />
-            <Label htmlFor="minimum_claim_price" value="Minimum Claim Price" />
-            <TextInput
-              id="minimum_claim_price"
-              type="number"
-              placeholder="Enter minimum claim price"
-              value={formData.minimum_claim_price}
-              onChange={handleChange}
-            />
-            <Label htmlFor="newImage" value="Image" />
-            <FileInput
-              id="newImage"
-              onChange={(e) => setNewImage(e.target.files[0])}
-            />
+      <div className="z-50">
+        {/* Toast Notification Outside Modal Context */}
+        {showToast && (
+          <div
+            className="fixed bottom-4 right-4 z-50" // High z-index ensures it appears above modal overlay
+          >
+            <Toast>
+              <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-500">
+                <svg
+                  className="h-5 w-5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414L8.414 15l-4.707-4.707a1 1 0 011.414-1.414L8.414 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div className="ml-3 text-sm font-normal">{toastMessage}</div>
+              <Toast.Toggle />
+            </Toast>
           </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button onClick={createPromo}>Create Promo</Button>
-          <Button color="gray" onClick={closeModal}>
-            Cancel
-          </Button>
-        </Modal.Footer>
-      </Modal>
+        )}
 
-      {/* Edit Promo Modal */}
-      <Modal show={isEditModalOpen} onClose={closeModal}>
-        <Modal.Header>Edit Promo</Modal.Header>
-        <Modal.Body>
-          <div>
-            <Label htmlFor="newTitle" value="Title" />
-            <TextInput
-              id="title"
-              type="text"
-              placeholder="Enter promo title"
-              value={formData.title}
-              onChange={handleChange}
-              required
-            />
-            <Label htmlFor="description" value="Description" />
-            <Textarea
-              id="description"
-              placeholder="Enter description"
-              value={formData.description}
-              onChange={handleChange}
-            />
-            <Label htmlFor="terms_condition" value="Terms and Conditions" />
-            <Textarea
-              id="terms_condition"
-              placeholder="Enter terms and conditions"
-              value={formData.terms_condition}
-              onChange={handleChange}
-            />
-            <Label htmlFor="promo_code" value="Promo Code" />
-            <TextInput
-              id="promo_code"
-              type="text"
-              placeholder="Enter promo code"
-              value={formData.promo_code}
-              onChange={handleChange}
-            />
-            <Label htmlFor="promo_discount_price" value="Discount Price" />
-            <TextInput
-              id="promo_discount_price"
-              type="number"
-              placeholder="Enter discount price"
-              value={formData.promo_discount_price}
-              onChange={handleChange}
-            />
-            <Label htmlFor="minimum_claim_price" value="Minimum Claim Price" />
-            <TextInput
-              id="minimum_claim_price"
-              type="number"
-              placeholder="Enter minimum claim price"
-              value={formData.minimum_claim_price}
-              onChange={handleChange}
-            />
-            <Label htmlFor="newImage" value="Image" />
-            <FileInput
-              id="newImage"
-              onChange={(e) => setNewImage(e.target.files[0])}
-            />
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button onClick={updatePromo}>Save Changes</Button>
-          <Button color="gray" onClick={closeModal}>
-            Cancel
-          </Button>
-        </Modal.Footer>
-      </Modal>
+        {/* Create Promo Modal */}
+        <Modal show={isCreateModalOpen} onClose={closeModal} className="z-10">
+          <Modal.Header>Create New Promo</Modal.Header>
+          <Modal.Body>
+            <div className="">
+              <Label htmlFor="newTitle" value="Title" />
+              <TextInput
+                id="title"
+                type="text"
+                placeholder="Enter promo title"
+                value={formData.title}
+                onChange={handleChange}
+                required
+              />
+              <Label htmlFor="description" value="Description" />
+              <Textarea
+                id="description"
+                placeholder="Enter description"
+                value={formData.description}
+                onChange={handleChange}
+              />
+              <Label htmlFor="terms_condition" value="Terms and Conditions" />
+              <Textarea
+                id="terms_condition"
+                placeholder="Enter terms and conditions"
+                value={formData.terms_condition}
+                onChange={handleChange}
+              />
+              <Label htmlFor="promo_code" value="Promo Code" />
+              <TextInput
+                id="promo_code"
+                type="text"
+                placeholder="Enter promo code"
+                value={formData.promo_code}
+                onChange={handleChange}
+              />
+              <Label htmlFor="promo_discount_price" value="Discount Price" />
+              <TextInput
+                id="promo_discount_price"
+                type="number"
+                placeholder="Enter discount price"
+                value={formData.promo_discount_price}
+                onChange={handleChange}
+              />
+              <Label
+                htmlFor="minimum_claim_price"
+                value="Minimum Claim Price"
+              />
+              <TextInput
+                id="minimum_claim_price"
+                type="number"
+                placeholder="Enter minimum claim price"
+                value={formData.minimum_claim_price}
+                onChange={handleChange}
+              />
+              <Label htmlFor="newImage" value="Image" />
+              <FileInput
+                id="newImage"
+                onChange={(e) => setNewImage(e.target.files[0])}
+              />
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={createPromo}>Create Promo</Button>
+            <Button color="gray" onClick={closeModal}>
+              Cancel
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+        {/* Edit Promo Modal */}
+        <Modal show={isEditModalOpen} onClose={closeModal}>
+          <Modal.Header>Edit Promo</Modal.Header>
+          <Modal.Body>
+            <div>
+              <Label htmlFor="newTitle" value="Title" />
+              <TextInput
+                id="title"
+                type="text"
+                placeholder="Enter promo title"
+                value={formData.title}
+                onChange={handleChange}
+                required
+              />
+              <Label htmlFor="description" value="Description" />
+              <Textarea
+                id="description"
+                placeholder="Enter description"
+                value={formData.description}
+                onChange={handleChange}
+              />
+              <Label htmlFor="terms_condition" value="Terms and Conditions" />
+              <Textarea
+                id="terms_condition"
+                placeholder="Enter terms and conditions"
+                value={formData.terms_condition}
+                onChange={handleChange}
+              />
+              <Label htmlFor="promo_code" value="Promo Code" />
+              <TextInput
+                id="promo_code"
+                type="text"
+                placeholder="Enter promo code"
+                value={formData.promo_code}
+                onChange={handleChange}
+              />
+              <Label htmlFor="promo_discount_price" value="Discount Price" />
+              <TextInput
+                id="promo_discount_price"
+                type="number"
+                placeholder="Enter discount price"
+                value={formData.promo_discount_price}
+                onChange={handleChange}
+              />
+              <Label
+                htmlFor="minimum_claim_price"
+                value="Minimum Claim Price"
+              />
+              <TextInput
+                id="minimum_claim_price"
+                type="number"
+                placeholder="Enter minimum claim price"
+                value={formData.minimum_claim_price}
+                onChange={handleChange}
+              />
+              <Label htmlFor="newImage" value="Image" />
+              <FileInput
+                id="newImage"
+                onChange={(e) => setNewImage(e.target.files[0])}
+              />
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={updatePromo}>Save Changes</Button>
+            <Button color="gray" onClick={closeModal}>
+              Cancel
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </div>
     </>
   );
 }

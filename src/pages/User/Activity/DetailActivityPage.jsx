@@ -3,13 +3,14 @@ import { UserContext } from "../../../context/UserContextProvider";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import Header from "../../../components/Header";
-import { Button, Card, Carousel } from "flowbite-react";
+import { Button, Card, Carousel, Toast } from "flowbite-react";
 import CustomFooter from "../../../components/CustomFooter";
 
 export default function DetailActivityPage() {
   const { user } = useContext(UserContext);
   const { id } = useParams();
   const [activity, setActivity] = useState(null);
+  const [showToast, setShowToast] = useState(false);
 
   // Fetch activity details by ID
   useEffect(() => {
@@ -44,7 +45,8 @@ export default function DetailActivityPage() {
           },
         }
       );
-      alert("Activity added to cart!");
+      setShowToast(true); // Show success toast
+      setTimeout(() => setShowToast(false), 3000); // Hide toast after 3 seconds
     } catch (error) {
       console.error("Failed to add activity to cart:", error);
       alert("Failed to add activity to cart. Please try again.");
@@ -121,6 +123,33 @@ export default function DetailActivityPage() {
           )}
         </div>
       </div>
+
+      {/* Success Toast */}
+      {showToast && (
+        <div className="fixed bottom-4 right-4">
+          <Toast>
+            <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-500">
+              <svg
+                className="h-5 w-5"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414L8.414 15l-4.707-4.707a1 1 0 011.414-1.414L8.414 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+            <div className="ml-3 text-sm font-normal">
+              Activity added to cart!
+            </div>
+            <Toast.Toggle />
+          </Toast>
+        </div>
+      )}
+
       <CustomFooter />
     </>
   );
