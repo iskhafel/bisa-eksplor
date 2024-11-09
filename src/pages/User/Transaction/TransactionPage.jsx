@@ -2,11 +2,14 @@ import { useEffect, useState, useContext } from "react";
 import { UserContext } from "../../../context/UserContextProvider";
 import axios from "axios";
 import Header from "../../../components/Header";
-import { Card, Button } from "flowbite-react";
+import { Card, Button, Modal, FileInput } from "flowbite-react";
 
 export default function TransactionPage() {
   const { user } = useContext(UserContext);
   const [transactions, setTransactions] = useState([]);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [selectedTransactionId, setSelectedTransactionId] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
 
   useEffect(() => {
     fetchTransactions();
@@ -29,11 +32,11 @@ export default function TransactionPage() {
   };
 
   // Cancel transaction function
-  const cancelTransaction = async (transactionId) => {
+  const cancelTransaction = async (id) => {
     const token = localStorage.getItem("JWT_TOKEN");
     try {
       await axios.post(
-        `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/cancel-transaction/${transactionId}`,
+        `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/cancel-transaction/${id}`,
         {},
         {
           headers: {
@@ -48,54 +51,72 @@ export default function TransactionPage() {
     }
   };
 
-  // Handle file upload for proof of payment
-  const uploadProof = async (transactionId) => {
+  // Open modal and set selected transaction ID for uploading proof
+  const openUploadModal = (transactionId) => {
+    setSelectedTransactionId(transactionId);
+    setIsUploadModalOpen(true);
+  };
+
+  // Close the upload modal
+  const closeUploadModal = () => {
+    setIsUploadModalOpen(false);
+    setSelectedFile(null);
+  };
+
+  // Handle file selection
+  const handleFileChange = (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
+
+  const handleFileUpload = async () => {
+    if (!selectedFile) return;
+
     const token = localStorage.getItem("JWT_TOKEN");
-    const fileInput = document.createElement("input");
-    fileInput.type = "file";
-    fileInput.accept = "image/*";
-    fileInput.onchange = async (event) => {
-      const file = event.target.files[0];
-      if (!file) return;
+    const formData = new FormData();
+    formData.append("image", selectedFile);
 
-      const formData = new FormData();
-      formData.append("image", file);
+    try {
+      // Step 1: Upload image to `upload-image` endpoint
+      const uploadResponse = await axios.post(
+        `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/upload-image`,
+        formData,
+        {
+          headers: {
+            apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
-      try {
-        // Step 1: Upload image to `upload-image` endpoint
-        const uploadResponse = await axios.post(
-          `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/upload-image`,
-          formData,
-          {
-            headers: {
-              apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
+      // Log response to check the structure
+      console.log("Upload Response:", uploadResponse);
 
-        // Extract image URL from the response
-        const imageUrl = uploadResponse.data.data.url;
-
-        // Step 2: Send the image URL to the proof of payment endpoint
-        await axios.post(
-          `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/update-transaction-proof-payment/${transactionId}`,
-          { proofPaymentUrl: imageUrl },
-          {
-            headers: {
-              apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        fetchTransactions(); // Refresh transactions after uploading proof
-      } catch (error) {
-        console.error("Failed to upload proof of payment:", error);
+      // Safely retrieve the URL from the response
+      const imageUrl = uploadResponse.data.url;
+      if (!imageUrl) {
+        console.error("Failed to retrieve image URL from response.");
+        return;
       }
-    };
-    fileInput.click();
+
+      // Step 2: Send the image URL to the proof of payment endpoint
+      await axios.post(
+        `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/update-transaction-proof-payment/${selectedTransactionId}`,
+        { proofPaymentUrl: imageUrl },
+        {
+          headers: {
+            apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Refresh transactions and close the modal
+      fetchTransactions();
+      closeUploadModal();
+    } catch (error) {
+      console.error("Failed to upload proof of payment:", error);
+    }
   };
 
   return (
@@ -118,7 +139,7 @@ export default function TransactionPage() {
                 <p>Proof of Payment: {transaction.proofPaymentUrl}</p>
                 <Button
                   size="sm"
-                  onClick={() => uploadProof(transaction.id)}
+                  onClick={() => openUploadModal(transaction.id)}
                   className="mt-2"
                 >
                   Upload Bukti Pembayaran
@@ -140,6 +161,24 @@ export default function TransactionPage() {
           <p className="text-center text-gray-700">No transactions found.</p>
         )}
       </div>
+
+      {/* Upload Proof of Payment Modal */}
+      <Modal show={isUploadModalOpen} onClose={closeUploadModal}>
+        <Modal.Header>Upload Proof of Payment</Modal.Header>
+        <Modal.Body>
+          <FileInput
+            onChange={handleFileChange}
+            accept="image/*"
+            className="mt-4"
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={handleFileUpload}>Upload</Button>
+          <Button color="gray" onClick={closeUploadModal}>
+            Cancel
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 }

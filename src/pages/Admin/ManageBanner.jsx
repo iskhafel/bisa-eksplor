@@ -8,21 +8,30 @@ import {
   Label,
   TextInput,
   FileInput,
+  Toast,
 } from "flowbite-react";
 import { UserContext } from "../../context/UserContextProvider";
 import AdminSidebar from "../../components/AdminSidebar";
 
 export default function ManageBanner() {
   const { user } = useContext(UserContext);
+  const [banners, setBanners] = useState([]);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedBanner, setSelectedBanner] = useState(null);
+  const [newTitle, setNewTitle] = useState("");
+  const [newImage, setNewImage] = useState(null);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
-  const [banners, setBanners] = useState([]); // Stores fetched banners
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false); // Controls create modal visibility
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false); // Controls edit modal visibility
-  const [selectedBanner, setSelectedBanner] = useState(null); // Stores banner being edited
-  const [newTitle, setNewTitle] = useState(""); // Stores new banner title
-  const [newImage, setNewImage] = useState(null); // Stores new banner image file
+  // Show Toast with Message
+  const showToastMessage = (message) => {
+    setToastMessage(message);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+  };
 
-  // Fetch all banners
+  // Fetch All Banners
   const fetchBanners = () => {
     const token = localStorage.getItem("JWT_TOKEN");
     axios
@@ -44,10 +53,10 @@ export default function ManageBanner() {
   };
 
   useEffect(() => {
-    fetchBanners(); // Fetch banners on component mount
+    fetchBanners();
   }, []);
 
-  // Open edit modal and set selected banner
+  // Open Edit Modal and Set Selected Banner
   const handleEditBanner = (banner) => {
     setSelectedBanner(banner);
     setNewTitle(banner.name);
@@ -55,7 +64,7 @@ export default function ManageBanner() {
     setIsEditModalOpen(true);
   };
 
-  // Close modals
+  // Close Modals
   const closeModal = () => {
     setIsEditModalOpen(false);
     setIsCreateModalOpen(false);
@@ -64,7 +73,7 @@ export default function ManageBanner() {
     setNewImage(null);
   };
 
-  // Upload image and return imageUrl
+  // Upload Image and Return URL
   const uploadImage = async (imageFile) => {
     const token = localStorage.getItem("JWT_TOKEN");
     const formData = new FormData();
@@ -82,22 +91,31 @@ export default function ManageBanner() {
           },
         }
       );
-      return response.data.url; // Return the uploaded image URL
+      return response.data.url;
     } catch (error) {
       console.error("Failed to upload image:", error);
       throw error;
     }
   };
 
-  // Create new banner
+  // Create New Banner
   const createBanner = async () => {
     const token = localStorage.getItem("JWT_TOKEN");
 
+    if (!newTitle) {
+      showToastMessage("Please enter a title for the banner.");
+      return;
+    }
+
+    // Ensure an image is uploaded
+    if (!newImage) {
+      showToastMessage("Please upload an image to create the banner.");
+      return;
+    }
+
     try {
-      // Upload image first
       const imageUrl = await uploadImage(newImage);
 
-      // Then create banner with the image URL
       await axios.post(
         "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/create-banner",
         {
@@ -112,26 +130,26 @@ export default function ManageBanner() {
         }
       );
 
-      fetchBanners(); // Refresh banners list
+      fetchBanners();
       closeModal();
+      showToastMessage("Banner created successfully!");
     } catch (error) {
       console.error("Failed to create banner:", error);
+      showToastMessage("Failed to create banner.");
     }
   };
 
-  // Update banner
+  // Update Banner
   const updateBanner = async () => {
     const token = localStorage.getItem("JWT_TOKEN");
 
     try {
       let imageUrl = selectedBanner.imageUrl;
 
-      // Upload new image if available
       if (newImage) {
         imageUrl = await uploadImage(newImage);
       }
 
-      // Update banner with new details
       await axios.post(
         `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/update-banner/${selectedBanner.id}`,
         {
@@ -146,14 +164,16 @@ export default function ManageBanner() {
         }
       );
 
-      fetchBanners(); // Refresh banners list
+      fetchBanners();
       closeModal();
+      showToastMessage("Banner updated successfully!");
     } catch (error) {
       console.error("Failed to update banner:", error);
+      showToastMessage("Failed to update banner.");
     }
   };
 
-  // Delete banner
+  // Delete Banner
   const deleteBanner = (id) => {
     const token = localStorage.getItem("JWT_TOKEN");
     axios
@@ -168,9 +188,11 @@ export default function ManageBanner() {
       )
       .then(() => {
         fetchBanners();
+        showToastMessage("Banner deleted successfully!");
       })
       .catch((error) => {
         console.error("Failed to delete banner:", error);
+        showToastMessage("Failed to delete banner.");
       });
   };
 
@@ -181,15 +203,11 @@ export default function ManageBanner() {
       <div className="flex">
         <AdminSidebar />
 
-        {/* Banner Cards Section */}
         <div className="flex-1 p-6 bg-gray-100">
           <h2 className="text-2xl font-bold mb-6">Manage Banners</h2>
-
-          {/* Create Banner Button */}
           <Button onClick={() => setIsCreateModalOpen(true)} className="mb-6">
             Create New Banner
           </Button>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {banners.map((banner) => (
               <Card key={banner.id} className="bg-white shadow-lg">
@@ -217,65 +235,93 @@ export default function ManageBanner() {
         </div>
       </div>
 
-      {/* Create Banner Modal */}
-      <Modal show={isCreateModalOpen} onClose={closeModal}>
-        <Modal.Header>Create New Banner</Modal.Header>
-        <Modal.Body>
-          <div>
-            <Label htmlFor="newTitle" value="Title" />
-            <TextInput
-              id="newTitle"
-              type="text"
-              placeholder="Enter banner title"
-              value={newTitle}
-              onChange={(e) => setNewTitle(e.target.value)}
-              required
-            />
-            <Label htmlFor="newImage" value="Image" />
-            <FileInput
-              id="newImage"
-              onChange={(e) => setNewImage(e.target.files[0])}
-            />
+      <div>
+        {/* Toast Notification Outside Modal Context */}
+        {showToast && (
+          <div
+            className="fixed bottom-4 right-4 z-50" // High z-index ensures it appears above modal overlay
+          >
+            <Toast>
+              <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-500">
+                <svg
+                  className="h-5 w-5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414L8.414 15l-4.707-4.707a1 1 0 011.414-1.414L8.414 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div className="ml-3 text-sm font-normal">{toastMessage}</div>
+              <Toast.Toggle />
+            </Toast>
           </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button onClick={createBanner}>Create Banner</Button>
-          <Button color="gray" onClick={closeModal}>
-            Cancel
-          </Button>
-        </Modal.Footer>
-      </Modal>
+        )}
 
-      {/* Edit Banner Modal */}
-      {selectedBanner && (
-        <Modal show={isEditModalOpen} onClose={closeModal}>
-          <Modal.Header>Edit Banner</Modal.Header>
+        {/* Create Banner Modal */}
+        <Modal show={isCreateModalOpen} onClose={closeModal} className="z-10">
+          <Modal.Header>Create New Banner</Modal.Header>
           <Modal.Body>
             <div>
-              <Label htmlFor="editTitle" value="Title" />
+              <Label htmlFor="newTitle" value="Title" />
               <TextInput
-                id="editTitle"
+                id="newTitle"
                 type="text"
-                placeholder={selectedBanner.name}
+                placeholder="Enter banner title"
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
                 required
               />
-              <Label htmlFor="editImage" value="Image" />
+              <Label htmlFor="newImage" value="Image" />
               <FileInput
-                id="editImage"
+                id="newImage"
                 onChange={(e) => setNewImage(e.target.files[0])}
               />
             </div>
           </Modal.Body>
           <Modal.Footer>
-            <Button onClick={updateBanner}>Save Changes</Button>
+            <Button onClick={createBanner}>Create Banner</Button>
             <Button color="gray" onClick={closeModal}>
               Cancel
             </Button>
           </Modal.Footer>
         </Modal>
-      )}
+
+        {/* Edit Banner Modal */}
+        {selectedBanner && (
+          <Modal show={isEditModalOpen} onClose={closeModal}>
+            <Modal.Header>Edit Banner</Modal.Header>
+            <Modal.Body>
+              <div>
+                <Label htmlFor="editTitle" value="Title" />
+                <TextInput
+                  id="editTitle"
+                  type="text"
+                  placeholder={selectedBanner.name}
+                  value={newTitle}
+                  onChange={(e) => setNewTitle(e.target.value)}
+                  required
+                />
+                <Label htmlFor="editImage" value="Image" />
+                <FileInput
+                  id="editImage"
+                  onChange={(e) => setNewImage(e.target.files[0])}
+                />
+              </div>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button onClick={updateBanner}>Save Changes</Button>
+              <Button color="gray" onClick={closeModal}>
+                Cancel
+              </Button>
+            </Modal.Footer>
+          </Modal>
+        )}
+      </div>
     </>
   );
 }
