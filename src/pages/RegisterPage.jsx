@@ -104,7 +104,14 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-slate-800 pt-4">
+    <div
+      className="flex flex-col items-center justify-center min-h-screen bg-slate-800 pt-4"
+      style={{
+        backgroundImage: `url("/rich-martello-jZ5tuGIWzRo-unsplash.jpg")`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
       <Card className="max-w-sm w-full mx-auto">
         <h1 className="text-3xl font-bold mx-auto">Register</h1>
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
