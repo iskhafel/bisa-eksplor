@@ -38,8 +38,15 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-slate-800">
-      <Card className="max-w-sm w-full mx-auto">
+    <div
+      className="flex flex-col items-center justify-center min-h-screen bg-cover bg-center"
+      style={{
+        backgroundImage: `url("/rich-martello-jZ5tuGIWzRo-unsplash.jpg")`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      <Card className="max-w-sm w-full mx-auto bg-opacity-80 backdrop-blur-lg">
         <h1 className="text-3xl font-bold text-center mb-4">Login</h1>
 
         {/* Login Form */}

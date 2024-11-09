@@ -11,6 +11,7 @@ import {
   Toast,
 } from "flowbite-react";
 import Header from "../components/Header";
+import CustomFooter from "../components/CustomFooter";
 
 export default function UpdateProfilePage() {
   const [user, setUser] = useState({});
@@ -114,7 +115,7 @@ export default function UpdateProfilePage() {
   return (
     <>
       <Header user={user} />
-      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-800">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-900">
         <Card className="max-w-sm" imgSrc={user.profilePictureUrl} horizontal>
           <h5 className="text-2xl font-bold tracking-tight text-gray-900 ">
             Name: {user.name}
@@ -204,6 +205,8 @@ export default function UpdateProfilePage() {
           </Button>
         </Modal.Footer>
       </Modal>
+
+      <CustomFooter />
     </>
   );
 }

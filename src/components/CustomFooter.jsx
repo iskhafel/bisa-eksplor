@@ -3,8 +3,8 @@ import { FaFacebook, FaInstagram, FaTiktok } from "react-icons/fa";
 
 const CustomFooter = () => {
   return (
-    <Footer container className="bg-slate-800 text-gray-200">
-      <div className="w-full flex justify-between items-center py-4">
+    <Footer container className="bg-slate-800 text-gray-200 rounded-none">
+      <div className="w-full flex justify-between items-center py-4 rounded-none">
         {/* Copyright Section */}
         <Footer.Copyright
           href="#"
