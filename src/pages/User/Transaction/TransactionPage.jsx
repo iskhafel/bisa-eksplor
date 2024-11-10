@@ -137,23 +137,27 @@ export default function TransactionPage() {
                 <p>Status: {transaction.status}</p>
                 <p>Total Amount: ${transaction.totalAmount}</p>
                 <p>Proof of Payment: {transaction.proofPaymentUrl}</p>
-                <Button
-                  size="sm"
-                  onClick={() => openUploadModal(transaction.id)}
-                  className="mt-2"
-                >
-                  Upload Bukti Pembayaran
-                </Button>
-                {transaction.status === "pending" && (
-                  <Button
-                    size="sm"
-                    color="red"
-                    onClick={() => cancelTransaction(transaction.id)}
-                    className="mt-2"
-                  >
-                    Cancel Transaction
-                  </Button>
-                )}
+                <div>
+                  {transaction.status === "pending" && (
+                    <>
+                      <Button
+                        size="sm"
+                        color="red"
+                        onClick={() => cancelTransaction(transaction.id)}
+                        className="mt-2"
+                      >
+                        Cancel Transaction
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => openUploadModal(transaction.id)}
+                        className="mt-2"
+                      >
+                        Upload Bukti Pembayaran
+                      </Button>
+                    </>
+                  )}
+                </div>
               </Card>
             ))}
           </div>

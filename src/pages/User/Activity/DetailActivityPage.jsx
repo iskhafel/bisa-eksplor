@@ -94,15 +94,21 @@ export default function DetailActivityPage() {
                 <p className="text-lg font-semibold text-blue-600 mb-2">
                   Price: ${activity.price_discount || activity.price}
                 </p>
-                <p className="text-sm text-gray-500">
-                  Location: {activity.address}
+                <p className="text-sm text-gray-500 mb=2">
+                  Address: {activity.address}
                 </p>
+                <p className="text-sm text-gray-500 my-2">
+                  Province: {activity.province}
+                </p>
+                <p className="text-sm text-gray-500">City: {activity.city}</p>
                 <p className="text-sm text-gray-500">
                   Facilities: {activity.facilities}
                 </p>
-                <Button onClick={handleAddToCart} className="mt-6">
-                  Add to Cart
-                </Button>
+                {user && user.role === "user" && (
+                  <Button onClick={handleAddToCart} className="mt-6">
+                    Add to Cart
+                  </Button>
+                )}
 
                 {/* Location Map */}
                 {activity.location_maps && (

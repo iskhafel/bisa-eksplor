@@ -1,9 +1,10 @@
+/* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Card } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
 
-const Promo = () => {
+const Promo = ({ limit }) => {
   const [promos, setPromos] = useState([]);
   const navigate = useNavigate();
   const fallbackImage = "https://via.placeholder.com/150";
@@ -23,6 +24,9 @@ const Promo = () => {
       })
       .catch((error) => console.error("Failed to fetch promos:", error));
   }, []);
+
+  // Limit the displayed promos
+  const displayedPromos = promos.slice(0, limit);
 
   const DetailPromo = (id) => {
     navigate(`/promo/${id}`);
@@ -49,8 +53,8 @@ const Promo = () => {
 
         {/* Promo Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-6xl mx-auto px-4">
-          {promos.length > 0 ? (
-            promos.map((promo) => (
+          {displayedPromos.length > 0 ? (
+            displayedPromos.map((promo) => (
               <Card
                 key={promo.id}
                 className="bg-white rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105 hover:shadow-2xl cursor-pointer"

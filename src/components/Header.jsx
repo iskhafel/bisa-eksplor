@@ -108,12 +108,14 @@ export default function Header({ user }) {
           >
             <FaTicketAlt size={20} /> Promo
           </Link>
-          <Link
-            className="flex gap-2 text-white hover:text-gray-300 hover:underline"
-            to="/cart"
-          >
-            <FaShoppingCart size={20} /> Cart
-          </Link>
+          {user && user.role === "user" && (
+            <Link
+              className="flex gap-2 text-white hover:text-gray-300 hover:underline"
+              to="/cart"
+            >
+              <FaShoppingCart size={20} /> Cart
+            </Link>
+          )}
           {user && user.role === "admin" && (
             <Link
               className="flex gap-2 text-white hover:text-gray-300 hover:underline"
@@ -144,12 +146,14 @@ export default function Header({ user }) {
             >
               <FaEdit /> Profile
             </Dropdown.Item>
-            <Dropdown.Item
-              className="flex gap-2"
-              onClick={() => navigate("/transaction")}
-            >
-              <GrTransaction /> My Transaction
-            </Dropdown.Item>
+            {user && user.role === "user" && (
+              <Dropdown.Item
+                className="flex gap-2"
+                onClick={() => navigate("/transaction")}
+              >
+                <GrTransaction /> My Transaction
+              </Dropdown.Item>
+            )}
             <Dropdown.Divider />
             <Dropdown.Item className="flex gap-2" onClick={handleLogout}>
               <FaSignOutAlt />
