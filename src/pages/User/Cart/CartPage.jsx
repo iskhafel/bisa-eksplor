@@ -11,6 +11,7 @@ export default function CartPage() {
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
   const navigate = useNavigate();
+  const fallbackImage = "https://via.placeholder.com/150";
 
   useEffect(() => {
     fetchCartItems();
@@ -112,7 +113,7 @@ export default function CartPage() {
     }
 
     try {
-      const response = await axios.post(
+      await axios.post(
         "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/create-transaction",
         { cartIds, paymentMethodId: selectedPaymentMethod },
         {
@@ -122,8 +123,7 @@ export default function CartPage() {
           },
         }
       );
-      const transactionId = response.data.data.id;
-      navigate(`/transaction/${transactionId}`);
+      navigate(`/transaction`);
     } catch (error) {
       console.error("Failed to create transaction:", error);
     }
@@ -141,12 +141,10 @@ export default function CartPage() {
               {cartItems.map((item) => (
                 <Card key={item.id} className="bg-white shadow-lg">
                   <img
-                    src={
-                      item.activity.imageUrls[0] ||
-                      "https://via.placeholder.com/150"
-                    }
+                    src={item.activity.imageUrls[0] || fallbackImage}
                     alt={item.activity.title}
                     className="w-full h-32 object-cover rounded-t-lg"
+                    onError={(e) => (e.target.src = fallbackImage)}
                   />
                   <div className="p-4">
                     <h3 className="text-lg font-bold text-slate-800">

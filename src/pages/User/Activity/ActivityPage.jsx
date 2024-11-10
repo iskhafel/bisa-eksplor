@@ -142,6 +142,9 @@ const ActivityPage = () => {
                 <p className="text-sm text-gray-700 mb-2 line-clamp-2">
                   {activity.address}
                 </p>
+                <p className="text-sm text-gray-700 mb-2 line-clamp-2">
+                  {activity.province}
+                </p>
                 <p className="text-blue-600 font-bold">
                   {activity.price_discount
                     ? `$${activity.price_discount}`
