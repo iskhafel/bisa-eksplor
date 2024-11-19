@@ -2,7 +2,14 @@ import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import Header from "../../../components/Header";
 import { UserContext } from "../../../context/UserContextProvider";
-import { Button, TextInput, Card, Select, Label } from "flowbite-react";
+import {
+  Button,
+  TextInput,
+  Card,
+  Select,
+  Label,
+  Checkbox,
+} from "flowbite-react";
 import { useNavigate } from "react-router-dom";
 
 export default function CartPage() {
@@ -10,6 +17,7 @@ export default function CartPage() {
   const [cartItems, setCartItems] = useState([]);
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
+  const [selectedItems, setSelectedItems] = useState([]);
   const navigate = useNavigate();
   const fallbackImage = "https://via.placeholder.com/150";
 
@@ -18,7 +26,6 @@ export default function CartPage() {
     fetchPaymentMethods();
   }, []);
 
-  // Fetch all items in the cart
   const fetchCartItems = async () => {
     const token = localStorage.getItem("JWT_TOKEN");
     try {
@@ -37,7 +44,6 @@ export default function CartPage() {
     }
   };
 
-  // Fetch available payment methods
   const fetchPaymentMethods = async () => {
     const token = localStorage.getItem("JWT_TOKEN");
     try {
@@ -56,7 +62,6 @@ export default function CartPage() {
     }
   };
 
-  // Update quantity of an item
   const updateCartQuantity = async (id, quantity) => {
     const token = localStorage.getItem("JWT_TOKEN");
     try {
@@ -70,13 +75,12 @@ export default function CartPage() {
           },
         }
       );
-      fetchCartItems(); // Refresh cart after updating quantity
+      fetchCartItems();
     } catch (error) {
       console.error("Failed to update cart quantity:", error);
     }
   };
 
-  // Delete an item from the cart
   const deleteCartItem = async (id) => {
     const token = localStorage.getItem("JWT_TOKEN");
     try {
@@ -89,33 +93,45 @@ export default function CartPage() {
           },
         }
       );
-      setCartItems(cartItems.filter((item) => item.id !== id)); // Update state after deleting
+      setCartItems(cartItems.filter((item) => item.id !== id));
+      setSelectedItems(selectedItems.filter((itemId) => itemId !== id));
     } catch (error) {
       console.error("Failed to delete cart item:", error);
     }
   };
 
-  // Calculate the total amount
+  const handleCheckboxChange = (id) => {
+    setSelectedItems((prevSelected) =>
+      prevSelected.includes(id)
+        ? prevSelected.filter((itemId) => itemId !== id)
+        : [...prevSelected, id]
+    );
+  };
+
   const totalAmount = cartItems.reduce((sum, item) => {
-    return sum + item.activity.price * item.quantity;
+    if (selectedItems.includes(item.id)) {
+      return sum + item.activity.price * item.quantity;
+    }
+    return sum;
   }, 0);
 
-  // Create Transaction and Navigate
   const createTransaction = async () => {
     const token = localStorage.getItem("JWT_TOKEN");
-
-    // Collect the cart item IDs
-    const cartIds = cartItems.map((item) => item.id);
 
     if (!selectedPaymentMethod) {
       alert("Please select a payment method.");
       return;
     }
 
+    if (selectedItems.length === 0) {
+      alert("Please select at least one item to checkout.");
+      return;
+    }
+
     try {
       await axios.post(
         "https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/create-transaction",
-        { cartIds, paymentMethodId: selectedPaymentMethod },
+        { cartIds: selectedItems, paymentMethodId: selectedPaymentMethod },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -140,6 +156,11 @@ export default function CartPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {cartItems.map((item) => (
                 <Card key={item.id} className="bg-white shadow-lg">
+                  <Checkbox
+                    checked={selectedItems.includes(item.id)}
+                    onChange={() => handleCheckboxChange(item.id)}
+                    className="ml-2"
+                  />
                   <img
                     src={item.activity.imageUrls[0] || fallbackImage}
                     alt={item.activity.title}
@@ -184,7 +205,6 @@ export default function CartPage() {
                 Total: ${totalAmount.toFixed(2)}
               </h3>
 
-              {/* Payment Method Selection */}
               <Label htmlFor="paymentMethod" value="Select Payment Method" />
               <Select
                 id="paymentMethod"
