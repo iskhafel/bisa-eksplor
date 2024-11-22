@@ -2,14 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import Header from "../../../components/Header";
 import { UserContext } from "../../../context/UserContextProvider";
-import {
-  Button,
-  TextInput,
-  Card,
-  Select,
-  Label,
-  Checkbox,
-} from "flowbite-react";
+import { Button, Card, Select, Label, Checkbox, Toast } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
 
 export default function CartPage() {
@@ -18,6 +11,8 @@ export default function CartPage() {
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
   const [selectedItems, setSelectedItems] = useState([]);
+  const [isSelectAll, setIsSelectAll] = useState(false);
+  const [toastMessage, setToastMessage] = useState(null); // State for toast message
   const navigate = useNavigate();
   const fallbackImage = "https://via.placeholder.com/150";
 
@@ -62,50 +57,22 @@ export default function CartPage() {
     }
   };
 
-  const updateCartQuantity = async (id, quantity) => {
-    const token = localStorage.getItem("JWT_TOKEN");
-    try {
-      await axios.post(
-        `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/update-cart/${id}`,
-        { quantity },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
-          },
-        }
-      );
-      fetchCartItems();
-    } catch (error) {
-      console.error("Failed to update cart quantity:", error);
-    }
-  };
-
-  const deleteCartItem = async (id) => {
-    const token = localStorage.getItem("JWT_TOKEN");
-    try {
-      await axios.delete(
-        `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/delete-cart/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
-          },
-        }
-      );
-      setCartItems(cartItems.filter((item) => item.id !== id));
-      setSelectedItems(selectedItems.filter((itemId) => itemId !== id));
-    } catch (error) {
-      console.error("Failed to delete cart item:", error);
-    }
-  };
-
   const handleCheckboxChange = (id) => {
     setSelectedItems((prevSelected) =>
       prevSelected.includes(id)
         ? prevSelected.filter((itemId) => itemId !== id)
         : [...prevSelected, id]
     );
+  };
+
+  const handleSelectAll = () => {
+    if (isSelectAll) {
+      setSelectedItems([]); // Deselect all items
+    } else {
+      const allItemIds = cartItems.map((item) => item.id); // Select all items
+      setSelectedItems(allItemIds);
+    }
+    setIsSelectAll(!isSelectAll);
   };
 
   const totalAmount = cartItems.reduce((sum, item) => {
@@ -119,12 +86,12 @@ export default function CartPage() {
     const token = localStorage.getItem("JWT_TOKEN");
 
     if (!selectedPaymentMethod) {
-      alert("Please select a payment method.");
+      setToastMessage("Please select a payment method.");
       return;
     }
 
     if (selectedItems.length === 0) {
-      alert("Please select at least one item to checkout.");
+      setToastMessage("Please select at least one item to checkout.");
       return;
     }
 
@@ -153,6 +120,16 @@ export default function CartPage() {
 
         {cartItems.length > 0 ? (
           <>
+            {/* Select All Button */}
+            <div className="flex items-center mb-4 gap-2">
+              <Checkbox
+                id="selectAll"
+                checked={isSelectAll}
+                onChange={handleSelectAll}
+              />
+              <Label htmlFor="selectAll" value="Select All" />
+            </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {cartItems.map((item) => (
                 <Card key={item.id} className="bg-white shadow-lg">
@@ -175,26 +152,6 @@ export default function CartPage() {
                       Price: ${item.activity.price}
                     </p>
                     <p className="text-slate-600">Quantity: {item.quantity}</p>
-                    <div className="flex gap-2 mt-4">
-                      <TextInput
-                        type="number"
-                        min="1"
-                        value={item.quantity}
-                        onChange={(e) =>
-                          updateCartQuantity(
-                            item.id,
-                            parseInt(e.target.value, 10)
-                          )
-                        }
-                        className="w-16"
-                      />
-                      <Button
-                        onClick={() => deleteCartItem(item.id)}
-                        color="failure"
-                      >
-                        Delete
-                      </Button>
-                    </div>
                   </div>
                 </Card>
               ))}
@@ -227,6 +184,30 @@ export default function CartPage() {
           </>
         ) : (
           <p className="text-center text-gray-700">Your cart is empty.</p>
+        )}
+
+        {/* Toast Notifications */}
+        {toastMessage && (
+          <div className="fixed bottom-4 right-4">
+            <Toast>
+              <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-500">
+                <svg
+                  className="h-5 w-5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-8a1 1 0 112-0 1 1 0 01-2 0zm2-3a1 1 0 00-2 0v2a1 1 0 102 0V7z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div className="ml-3 text-sm font-normal">{toastMessage}</div>
+              <Toast.Toggle onClick={() => setToastMessage(null)} />
+            </Toast>
+          </div>
         )}
       </div>
     </>
