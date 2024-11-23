@@ -44,7 +44,7 @@ const Promo = ({ limit }) => {
       {/* Dark overlay to reduce background brightness */}
       <div className="absolute inset-0 bg-black opacity-50"></div>
 
-      <div className="relative z-10">
+      <div className="relative">
         {/* Promo Title Section */}
         <div className="text-center mb-6">
           <h2 className="text-3xl font-bold mb-2">Special Promo For You!</h2>

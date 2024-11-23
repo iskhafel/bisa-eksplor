@@ -10,6 +10,7 @@ import {
   FileInput,
   Toast,
 } from "flowbite-react";
+import Header from "../components/Header";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -104,149 +105,156 @@ export default function RegisterPage() {
   };
 
   return (
-    <div
-      className="flex flex-col items-center justify-center min-h-screen bg-slate-800 pt-4"
-      style={{
-        backgroundImage: `url("/rich-martello-jZ5tuGIWzRo-unsplash.jpg")`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
-      <Card className="max-w-sm w-full mx-auto">
-        <h1 className="text-3xl font-bold mx-auto">Register</h1>
-        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-          {error && <div className="text-red-500">{error}</div>}
+    <>
+      <Header />
+      <div
+        className="flex flex-col items-center justify-center min-h-screen bg-slate-800 pt-4"
+        style={{
+          backgroundImage: `url("/rich-martello-jZ5tuGIWzRo-unsplash.jpg")`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <Card className="max-w-sm w-full mx-auto">
+          <h1 className="text-3xl font-bold mx-auto">Register</h1>
+          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+            {error && <div className="text-red-500">{error}</div>}
 
-          <div>
-            <Label htmlFor="name" value="Name" className="mb-2 block" />
-            <TextInput
-              id="name"
-              type="text"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="email" value="Email" className="mb-2 block" />
-            <TextInput
-              id="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="password" value="Password" className="mb-2 block" />
-            <TextInput
-              id="password"
-              type="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div>
-            <Label
-              htmlFor="passwordRepeat"
-              value="Repeat Password"
-              className="mb-2 block"
-            />
-            <TextInput
-              id="passwordRepeat"
-              type="password"
-              value={formData.passwordRepeat}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div>
-            <Label
-              htmlFor="profilePicture"
-              value="Profile Picture"
-              className="mb-2 block"
-            />
-            <FileInput id="profilePicture" onChange={handleFileChange} />
-          </div>
-
-          <div>
-            <Label
-              htmlFor="phoneNumber"
-              value="Phone Number"
-              className="mb-2 block"
-            />
-            <TextInput
-              id="phoneNumber"
-              type="text"
-              value={formData.phoneNumber}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div>
-            <Label value="Role" className="mb-2 block" />
-            <div className="flex gap-4">
-              <Radio
-                id="role"
-                name="role1"
-                value="user"
-                checked={formData.role === "user"}
-                onChange={handleRoleChange}
+            <div>
+              <Label htmlFor="name" value="Name" className="mb-2 block" />
+              <TextInput
+                id="name"
+                type="text"
+                value={formData.name}
+                onChange={handleChange}
+                required
               />
-              <Label htmlFor="userRole">User</Label>
-              <Radio
-                id="role"
-                name="role2"
-                value="admin"
-                checked={formData.role === "admin"}
-                onChange={handleRoleChange}
-              />
-              <Label htmlFor="adminRole">Admin</Label>
             </div>
-          </div>
 
-          <Label className="flex mx-auto gap-1">
-            Already have an account?
-            <Link className="text-blue-500" to="/login">
-              Login
-            </Link>
-          </Label>
+            <div>
+              <Label htmlFor="email" value="Email" className="mb-2 block" />
+              <TextInput
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </div>
 
-          <Button type="submit">Submit</Button>
-        </form>
-      </Card>
+            <div>
+              <Label
+                htmlFor="password"
+                value="Password"
+                className="mb-2 block"
+              />
+              <TextInput
+                id="password"
+                type="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+            </div>
 
-      {/* Success Toast */}
-      {showToast && (
-        <div className="fixed bottom-4 right-4">
-          <Toast>
-            <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-500">
-              <svg
-                className="h-5 w-5"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M16.707 5.293a1 1 0 010 1.414L8.414 15l-4.707-4.707a1 1 0 011.414-1.414L8.414 12.586l7.293-7.293a1 1 0 011.414 0z"
-                  clipRule="evenodd"
+            <div>
+              <Label
+                htmlFor="passwordRepeat"
+                value="Repeat Password"
+                className="mb-2 block"
+              />
+              <TextInput
+                id="passwordRepeat"
+                type="password"
+                value={formData.passwordRepeat}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div>
+              <Label
+                htmlFor="profilePicture"
+                value="Profile Picture"
+                className="mb-2 block"
+              />
+              <FileInput id="profilePicture" onChange={handleFileChange} />
+            </div>
+
+            <div>
+              <Label
+                htmlFor="phoneNumber"
+                value="Phone Number"
+                className="mb-2 block"
+              />
+              <TextInput
+                id="phoneNumber"
+                type="text"
+                value={formData.phoneNumber}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div>
+              <Label value="Role" className="mb-2 block" />
+              <div className="flex gap-4">
+                <Radio
+                  id="role"
+                  name="role1"
+                  value="user"
+                  checked={formData.role === "user"}
+                  onChange={handleRoleChange}
                 />
-              </svg>
+                <Label htmlFor="userRole">User</Label>
+                <Radio
+                  id="role"
+                  name="role2"
+                  value="admin"
+                  checked={formData.role === "admin"}
+                  onChange={handleRoleChange}
+                />
+                <Label htmlFor="adminRole">Admin</Label>
+              </div>
             </div>
-            <div className="ml-3 text-sm font-normal">
-              Registration successful!
-            </div>
-            <Toast.Toggle />
-          </Toast>
-        </div>
-      )}
-    </div>
+
+            <Label className="flex mx-auto gap-1">
+              Already have an account?
+              <Link className="text-blue-500" to="/login">
+                Login
+              </Link>
+            </Label>
+
+            <Button type="submit">Submit</Button>
+          </form>
+        </Card>
+
+        {/* Success Toast */}
+        {showToast && (
+          <div className="fixed bottom-4 right-4">
+            <Toast>
+              <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-500">
+                <svg
+                  className="h-5 w-5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414L8.414 15l-4.707-4.707a1 1 0 011.414-1.414L8.414 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div className="ml-3 text-sm font-normal">
+                Registration successful!
+              </div>
+              <Toast.Toggle />
+            </Toast>
+          </div>
+        )}
+      </div>
+    </>
   );
 }

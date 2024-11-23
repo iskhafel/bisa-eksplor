@@ -154,8 +154,8 @@ const ActivityPage = () => {
             </Card>
           ))}
         </div>
-        <CustomFooter />
       </div>
+      <CustomFooter />
     </div>
   );
 };
