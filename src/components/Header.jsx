@@ -88,7 +88,7 @@ export default function Header({ user }) {
       </div>
 
       <Navbar.Collapse>
-        <div className="flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-10 py-2">
+        <div className="flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-10 py-2 z-10">
           <Link
             className="flex gap-2 text-white hover:text-gray-300 hover:underline"
             to="/"

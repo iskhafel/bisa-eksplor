@@ -115,7 +115,14 @@ export default function UpdateProfilePage() {
   return (
     <>
       <Header user={user} />
-      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-900">
+      <div
+        className="flex flex-col items-center justify-center min-h-screen"
+        style={{
+          backgroundImage: `url("/rich-martello-jZ5tuGIWzRo-unsplash.jpg")`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
         <Card className="max-w-sm" imgSrc={user.profilePictureUrl} horizontal>
           <h5 className="text-2xl font-bold tracking-tight text-gray-900 ">
             Name: {user.name}
