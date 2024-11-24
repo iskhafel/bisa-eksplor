@@ -57,7 +57,7 @@ export default function DetailActivityPage() {
     <>
       <Header user={user} />
       <div
-        className="relative min-h-screen bg-slate-900 text-white flex justify-center items-center p-4"
+        className="relative min-h-screen bg-slate-900 text-white flex justify-center items-center p-16"
         style={{
           backgroundImage: `url("/rebe-adelaida-zunQwMy5B6M-unsplash.jpg")`,
           backgroundSize: "cover",
