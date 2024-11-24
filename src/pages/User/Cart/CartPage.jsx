@@ -12,7 +12,7 @@ export default function CartPage() {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
   const [selectedItems, setSelectedItems] = useState([]);
   const [isSelectAll, setIsSelectAll] = useState(false);
-  const [toastMessage, setToastMessage] = useState(null); // State for toast message
+  const [toastMessage, setToastMessage] = useState(null);
   const navigate = useNavigate();
   const fallbackImage = "https://via.placeholder.com/150";
 
@@ -57,6 +57,29 @@ export default function CartPage() {
     }
   };
 
+  const updateCartQuantity = async (cartId, quantity) => {
+    const token = localStorage.getItem("JWT_TOKEN");
+    try {
+      await axios.post(
+        `https://travel-journal-api-bootcamp.do.dibimbing.id/api/v1/update-cart/${cartId}`,
+        { quantity },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            apiKey: "24405e01-fbc1-45a5-9f5a-be13afcd757c",
+          },
+        }
+      );
+      setCartItems((prevItems) =>
+        prevItems.map((item) =>
+          item.id === cartId ? { ...item, quantity } : item
+        )
+      );
+    } catch (error) {
+      console.error("Failed to update cart quantity:", error);
+    }
+  };
+
   const handleCheckboxChange = (id) => {
     setSelectedItems((prevSelected) =>
       prevSelected.includes(id)
@@ -67,9 +90,9 @@ export default function CartPage() {
 
   const handleSelectAll = () => {
     if (isSelectAll) {
-      setSelectedItems([]); // Deselect all items
+      setSelectedItems([]);
     } else {
-      const allItemIds = cartItems.map((item) => item.id); // Select all items
+      const allItemIds = cartItems.map((item) => item.id);
       setSelectedItems(allItemIds);
     }
     setIsSelectAll(!isSelectAll);
@@ -120,7 +143,6 @@ export default function CartPage() {
 
         {cartItems.length > 0 ? (
           <>
-            {/* Select All Button */}
             <div className="flex items-center mb-4 gap-2">
               <Checkbox
                 id="selectAll"
@@ -151,7 +173,28 @@ export default function CartPage() {
                     <p className="text-slate-600">
                       Price: ${item.activity.price}
                     </p>
-                    <p className="text-slate-600">Quantity: {item.quantity}</p>
+                    <div className="flex items-center mt-2">
+                      <button
+                        onClick={() =>
+                          updateCartQuantity(
+                            item.id,
+                            Math.max(1, item.quantity - 1)
+                          )
+                        }
+                        className="px-2 py-1 border rounded bg-gray-200"
+                      >
+                        -
+                      </button>
+                      <span className="px-4">{item.quantity}</span>
+                      <button
+                        onClick={() =>
+                          updateCartQuantity(item.id, item.quantity + 1)
+                        }
+                        className="px-2 py-1 border rounded bg-gray-200"
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
                 </Card>
               ))}
@@ -186,7 +229,6 @@ export default function CartPage() {
           <p className="text-center text-gray-700">Your cart is empty.</p>
         )}
 
-        {/* Toast Notifications */}
         {toastMessage && (
           <div className="fixed bottom-4 right-4">
             <Toast>
