@@ -15,7 +15,7 @@ export default function HomePage() {
       <Header user={user} />
       <Banner />
       <Promo limit={4} />
-      <Category />
+      <Category limit={4} />
       <Activity limit={4} />
       <CustomFooter />
     </div>

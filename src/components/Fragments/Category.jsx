@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable react/jsx-key */
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -11,7 +12,7 @@ import {
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
-const Category = () => {
+const Category = ({ limit }) => {
   const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
 
@@ -45,6 +46,9 @@ const Category = () => {
     <FaGlobe className="text-4xl text-teal-500" />,
   ];
 
+  // Limit the displayed category
+  const displayedCategories = categories.slice(0, limit);
+
   // Helper function to get a random icon for each category
   const getRandomIcon = () => icons[Math.floor(Math.random() * icons.length)];
 
@@ -60,8 +64,8 @@ const Category = () => {
 
       {/* Category Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 max-w-6xl mx-auto px-4">
-        {categories.length > 0 ? (
-          categories.map((category) => (
+        {displayedCategories.length > 0 ? (
+          displayedCategories.map((category) => (
             <div
               key={category.id}
               className="cursor-pointer relative flex flex-col items-center justify-center p-6 bg-cover bg-center rounded-lg shadow-md  transition-transform duration-300 hover:scale-105 hover:shadow-2xl text-white"

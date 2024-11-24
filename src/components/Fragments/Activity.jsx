@@ -37,7 +37,7 @@ const Activity = ({ limit = 4 }) => {
     <div className="py-8 bg-gray-900" style={backgroundStyle}>
       {" "}
       {/* Apply backgroundStyle here */}
-      <div className="text-center py-8 bg-gray-900 bg-opacity-75">
+      <div className="text-center py-2 bg-opacity-75">
         <h2 className="text-3xl font-bold mb-2 pt-4">
           Explore Activities By Categories!
         </h2>
