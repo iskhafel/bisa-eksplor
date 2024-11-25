@@ -2,12 +2,13 @@ import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../context/UserContextProvider";
 import axios from "axios";
 import Header from "../../components/Header";
-import { Card, Button, Modal, Select } from "flowbite-react";
+import { Card, Button, Modal, Select, TextInput } from "flowbite-react";
 import AdminSidebar from "../../components/AdminSidebar";
 
 export default function ManageTransaction() {
   const { user } = useContext(UserContext);
   const [transactions, setTransactions] = useState([]);
+  const [filteredTransactions, setFilteredTransactions] = useState([]);
   const [selectedTransaction, setSelectedTransaction] = useState({
     id: "",
     status: "",
@@ -16,11 +17,17 @@ export default function ManageTransaction() {
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [status, setStatus] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
+  const [searchId, setSearchId] = useState("");
   const fallbackImage = "https://via.placeholder.com/150";
 
   useEffect(() => {
     fetchAllTransactions();
   }, []);
+
+  useEffect(() => {
+    applyFilters();
+  }, [filterStatus, searchId, transactions]);
 
   // Fetch all transactions
   const fetchAllTransactions = async () => {
@@ -36,9 +43,28 @@ export default function ManageTransaction() {
         }
       );
       setTransactions(response.data.data);
+      setFilteredTransactions(response.data.data);
     } catch (error) {
       console.error("Failed to fetch transactions:", error);
     }
+  };
+
+  const applyFilters = () => {
+    let filtered = transactions;
+
+    if (filterStatus) {
+      filtered = filtered.filter(
+        (transaction) => transaction.status === filterStatus
+      );
+    }
+
+    if (searchId) {
+      filtered = filtered.filter((transaction) =>
+        transaction.id.toLowerCase().includes(searchId.toLowerCase())
+      );
+    }
+
+    setFilteredTransactions(filtered);
   };
 
   // Fetch transaction details by ID if status is "Pending"
@@ -92,8 +118,30 @@ export default function ManageTransaction() {
         <div className="flex-1 p-6 bg-gray-100 min-h-screen">
           <h2 className="text-2xl font-bold mb-6">Manage Transactions</h2>
 
+          {/* Filter and Search Section */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+            <TextInput
+              placeholder="Search by Transaction ID"
+              value={searchId}
+              onChange={(e) => setSearchId(e.target.value)}
+              className="flex-1"
+            />
+            <Select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="flex-1 sm:max-w-xs"
+            >
+              <option value="">Filter by Status</option>
+              <option value="pending">Pending</option>
+              <option value="success">Success</option>
+              <option value="failed">Failed</option>
+              <option value="cancelled">Cancelled</option>
+            </Select>
+          </div>
+
+          {/* Transactions List */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {transactions.map((transaction) => (
+            {filteredTransactions.map((transaction) => (
               <Card key={transaction.id} className="bg-white shadow-lg p-4">
                 <p className="font-semibold">
                   Transaction ID: {transaction.id}
@@ -132,7 +180,7 @@ export default function ManageTransaction() {
                   {selectedTransaction.proofPaymentUrl ? (
                     <img
                       src={selectedTransaction.proofPaymentUrl || fallbackImage}
-                      className="mt-2 w-flAmounauto max-w-xs rounded-lg shadow-md"
+                      className="mt-2 w-auto max-w-xs rounded-lg shadow-md"
                       onError={(e) => (e.currentTarget.src = fallbackImage)}
                     />
                   ) : (
