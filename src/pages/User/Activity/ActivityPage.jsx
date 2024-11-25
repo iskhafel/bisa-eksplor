@@ -117,7 +117,7 @@ const ActivityPage = () => {
         </div>
 
         {/* Activity Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-10 p-16 bg-gray-900 bg-opacity-75">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 p-16 bg-gray-900 bg-opacity-75">
           {activities.map((activity) => (
             <Card
               key={activity.id}
