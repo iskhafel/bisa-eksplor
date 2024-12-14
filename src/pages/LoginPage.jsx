@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { Button, Card, Label, TextInput, Toast } from "flowbite-react";
 import Header from "../components/Header";
+import { UserContext } from "../context/UserContextProvider";
 
 const LoginPage = () => {
+  const { getUserProfile } = useContext(UserContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
@@ -24,6 +26,7 @@ const LoginPage = () => {
       .then((response) => {
         // Store JWT token in localStorage and set success state
         localStorage.setItem("JWT_TOKEN", response.data.token);
+        getUserProfile();
         setShowToast(true); // Show success toast
         setTimeout(() => setShowToast(false), 3000); // Hide toast after 3 seconds
 
